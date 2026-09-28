@@ -29,82 +29,24 @@ HOUSTON_BBOX = {
     'ymax': 30.2,
 }
 
-# ── Elected Officials Data (as of 2024-2025 session) ──────────────
-# Congressional districts intersecting Harris County
-CONGRESSIONAL_REPS = {
-    '2': {'representative': 'Dan Crenshaw', 'party': 'R'},
-    '7': {'representative': 'Lizzie Fletcher', 'party': 'D'},
-    '8': {'representative': 'Morgan Luttrell', 'party': 'R'},
-    '9': {'representative': 'Al Green', 'party': 'D'},
-    '10': {'representative': 'Michael McCaul', 'party': 'R'},
-    '18': {'representative': 'Sheila Jackson Lee', 'party': 'D'},
-    '22': {'representative': 'Troy Nehls', 'party': 'R'},
-    '29': {'representative': 'Sylvia Garcia', 'party': 'D'},
-    '36': {'representative': 'Brian Babin', 'party': 'R'},
-    '38': {'representative': 'Wesley Hunt', 'party': 'R'},
-}
+# ── Elected officials ─────────────────────────────────────────────
+# Loaded from data/political/officeholders.json (sourced, dated). Update that
+# file when seats change; nothing here is hard-coded.
+_OFFICE = json.load(open(os.path.join(OUTPUT_DIR, 'officeholders.json'), encoding='utf-8'))
 
-# Texas State Senate districts intersecting Harris County
-STATE_SENATE_REPS = {
-    '4': {'representative': 'Brandon Creighton', 'party': 'R'},
-    '6': {'representative': 'Carol Alvarado', 'party': 'D'},
-    '7': {'representative': 'Paul Bettencourt', 'party': 'R'},
-    '11': {'representative': 'Larry Taylor', 'party': 'R'},
-    '13': {'representative': 'Borris Miles', 'party': 'D'},
-    '15': {'representative': 'John Whitmire', 'party': 'D'},
-    '17': {'representative': 'Joan Huffman', 'party': 'R'},
-}
 
-# Texas State House districts — major ones in Harris County
-STATE_HOUSE_REPS = {
-    '126': {'representative': 'Sam Harless', 'party': 'R'},
-    '127': {'representative': 'Dan Huberty', 'party': 'R'},
-    '128': {'representative': 'Briscoe Cain', 'party': 'R'},
-    '129': {'representative': 'Dennis Paul', 'party': 'R'},
-    '130': {'representative': 'Tom Oliverson', 'party': 'R'},
-    '131': {'representative': 'Alma Allen', 'party': 'D'},
-    '132': {'representative': 'Mike Schofield', 'party': 'R'},
-    '133': {'representative': 'Jim Murphy', 'party': 'R'},
-    '134': {'representative': 'Ann Johnson', 'party': 'D'},
-    '135': {'representative': 'Jon Rosenthal', 'party': 'D'},
-    '137': {'representative': 'Gene Wu', 'party': 'D'},
-    '138': {'representative': 'Lacey Hull', 'party': 'R'},
-    '139': {'representative': 'Jarvis Johnson', 'party': 'D'},
-    '140': {'representative': 'Armando Walle', 'party': 'D'},
-    '141': {'representative': 'Senfronia Thompson', 'party': 'D'},
-    '142': {'representative': 'Harold Dutton', 'party': 'D'},
-    '143': {'representative': 'Ana Hernandez', 'party': 'D'},
-    '144': {'representative': 'Mary Ann Perez', 'party': 'D'},
-    '145': {'representative': 'Christina Morales', 'party': 'D'},
-    '146': {'representative': 'Shawn Thierry', 'party': 'D'},
-    '147': {'representative': 'Jolanda Jones', 'party': 'D'},
-    '148': {'representative': 'Penny Morales Shaw', 'party': 'D'},
-    '149': {'representative': 'Hubert Vo', 'party': 'D'},
-    '150': {'representative': 'Valoree Swanson', 'party': 'R'},
-}
+def _reps(key, value_key='party'):
+    return {k: {'representative': v['name'], 'party': v.get(value_key) or 'Unknown'}
+            for k, v in _OFFICE[key].items()}
 
-# Harris County Commissioner Precincts
-COMMISSIONER_PRECINCTS = {
-    '1': {'representative': 'Rodney Ellis', 'party': 'D'},
-    '2': {'representative': 'Adrian Garcia', 'party': 'D'},
-    '3': {'representative': 'Tom Ramsey', 'party': 'R'},
-    '4': {'representative': 'Lesley Briones', 'party': 'D'},
-}
 
-# Houston City Council districts
-CITY_COUNCIL = {
-    'A': {'representative': 'Amy Peck', 'party': 'D'},
-    'B': {'representative': 'Tarsha Jackson', 'party': 'D'},
-    'C': {'representative': 'Abbie Kamin', 'party': 'D'},
-    'D': {'representative': 'Carolyn Evans-Shabazz', 'party': 'D'},
-    'E': {'representative': 'Fred Flickinger', 'party': 'R'},
-    'F': {'representative': 'Tiffany Thomas', 'party': 'D'},
-    'G': {'representative': 'Mary Nan Huffman', 'party': 'D'},
-    'H': {'representative': 'Mario Castillo', 'party': 'D'},
-    'I': {'representative': 'Robert Gallegos', 'party': 'D'},
-    'J': {'representative': 'Edward Pollard', 'party': 'D'},
-    'K': {'representative': 'Martha Castex-Tatum', 'party': 'D'},
-}
+CONGRESSIONAL_REPS = _reps('tx_congress')
+STATE_SENATE_REPS = _reps('tx_senate')
+STATE_HOUSE_REPS = _reps('tx_house')
+COMMISSIONER_PRECINCTS = _reps('harris_commissioners')
+# Houston municipal elections are nonpartisan.
+CITY_COUNCIL = {k: {'representative': v['name'], 'party': 'NP'}
+                for k, v in _OFFICE['houston_council'].items()}
 
 
 def fetch_json(url, retries=3):
@@ -253,7 +195,7 @@ def fetch_commissioner_precincts():
 
     if not data or 'features' not in data:
         print("  WARNING: Could not fetch commissioner precincts, using fallback")
-        return create_fallback_commissioner_precincts()
+        raise SystemExit("Could not fetch commissioner precincts; refusing to invent boundaries.")
 
     features = []
     for feat in data.get('features', []):
@@ -294,48 +236,6 @@ def fetch_commissioner_precincts():
     return features
 
 
-def create_fallback_commissioner_precincts():
-    """Create approximate commissioner precinct boundaries as fallback."""
-    print("  Creating approximate commissioner precinct boundaries...")
-
-    # Approximate quadrant division of Harris County centered at ~29.76, -95.37
-    center_lat, center_lon = 29.76, -95.37
-    north, south = 30.15, 29.50
-    east, west = -94.95, -95.85
-
-    precincts = {
-        '1': [(center_lat, west), (center_lat, center_lon), (north, center_lon), (north, west)],
-        '2': [(center_lat, center_lon), (center_lat, east), (north, east), (north, center_lon)],
-        '3': [(south, center_lon), (south, east), (center_lat, east), (center_lat, center_lon)],
-        '4': [(south, west), (south, center_lon), (center_lat, center_lon), (center_lat, west)],
-    }
-
-    features = []
-    for pct_num, corners in precincts.items():
-        coords = [[c[1], c[0]] for c in corners]
-        coords.append(coords[0])  # close ring
-
-        rep_info = COMMISSIONER_PRECINCTS.get(pct_num, {})
-        features.append({
-            'type': 'Feature',
-            'properties': {
-                'district_type': 'commissioner',
-                'district_id': f"HC-PCT-{pct_num}",
-                'district_number': pct_num,
-                'name': f"Commissioner Precinct {pct_num}",
-                'representative': rep_info.get('representative', 'Unknown'),
-                'party': rep_info.get('party', 'Unknown'),
-                'level': 'county',
-            },
-            'geometry': {
-                'type': 'Polygon',
-                'coordinates': [coords],
-            }
-        })
-
-    print(f"  Created {len(features)} approximate precincts")
-    return features
-
 
 def fetch_city_council():
     """Fetch Houston City Council district boundaries."""
@@ -356,7 +256,7 @@ def fetch_city_council():
 
     if not data or 'features' not in data:
         print("  WARNING: Could not fetch city council districts, using fallback")
-        return create_fallback_city_council()
+        raise SystemExit("Could not fetch city council districts; refusing to invent boundaries.")
 
     features = []
     for feat in data.get('features', []):
@@ -403,51 +303,6 @@ def fetch_city_council():
     print(f"  Got {len(features)} city council districts")
     return features
 
-
-def create_fallback_city_council():
-    """Create approximate city council district boundaries as fallback."""
-    print("  Creating approximate city council district boundaries...")
-    import math
-
-    # Create roughly pie-shaped sectors around downtown Houston
-    center_lat, center_lon = 29.76, -95.37
-    radius = 0.15  # degrees
-    districts = list('ABCDEFGHIJK')
-
-    features = []
-    n = len(districts)
-    for i, dist_id in enumerate(districts):
-        angle_start = (2 * math.pi * i / n) - math.pi / 2
-        angle_end = (2 * math.pi * (i + 1) / n) - math.pi / 2
-
-        coords = [[center_lon, center_lat]]
-        for step in range(11):
-            angle = angle_start + (angle_end - angle_start) * step / 10
-            lon = center_lon + radius * math.cos(angle) * 1.2  # stretch for lon
-            lat = center_lat + radius * math.sin(angle)
-            coords.append([round(lon, 4), round(lat, 4)])
-        coords.append([center_lon, center_lat])
-
-        rep_info = CITY_COUNCIL.get(dist_id, {})
-        features.append({
-            'type': 'Feature',
-            'properties': {
-                'district_type': 'city_council',
-                'district_id': f"HOU-{dist_id}",
-                'district_number': dist_id,
-                'name': f"Houston City Council District {dist_id}",
-                'representative': rep_info.get('representative', 'Unknown'),
-                'party': rep_info.get('party', 'Unknown'),
-                'level': 'city',
-            },
-            'geometry': {
-                'type': 'Polygon',
-                'coordinates': [coords],
-            }
-        })
-
-    print(f"  Created {len(features)} approximate city council districts")
-    return features
 
 
 def main():

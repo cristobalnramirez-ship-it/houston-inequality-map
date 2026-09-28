@@ -1,8 +1,9 @@
 """
 Fetch real ACS 5-Year data from Census API and update existing GeoJSON files.
 
-Replaces synthetic 2020 values in income_2020.geojson and race_2020.geojson
-with real Census data while keeping synthetic historical decade values (1970-2010).
+Writes ACS 2018-2022 5-year values into income_2020.geojson and race_2020.geojson.
+Values the Census Bureau suppresses are stored as null (never filled in), and
+no historical decades are generated.
 
 Works without an API key at lower rate limits.
 """
@@ -144,13 +145,9 @@ def update_income_geojson(acs_data):
         if tract_id in acs_data:
             acs = acs_data[tract_id]
             # Replace 2020 values with real data
-            if acs['median_income'] is not None:
-                props['income_2020'] = acs['median_income']
-            if acs['poverty_rate'] is not None:
-                props['poverty_rate_2020'] = acs['poverty_rate']
-            if acs['population'] is not None:
-                props['population_2020'] = acs['population']
-            props['is_sample_data'] = False
+            props['income_2020'] = acs['median_income']
+            props['poverty_rate_2020'] = acs['poverty_rate']
+            props['population_2020'] = acs['population']
             matched += 1
         else:
             unmatched += 1
@@ -181,21 +178,13 @@ def update_race_geojson(acs_data):
         if tract_id in acs_data:
             acs = acs_data[tract_id]
             # Replace 2020 values with real data
-            if acs['pct_white'] is not None:
-                props['pct_white_2020'] = acs['pct_white']
-            if acs['pct_black'] is not None:
-                props['pct_black_2020'] = acs['pct_black']
-            if acs['pct_hispanic'] is not None:
-                props['pct_hispanic_2020'] = acs['pct_hispanic']
-            if acs['pct_asian'] is not None:
-                props['pct_asian_2020'] = acs['pct_asian']
-            if acs['dominant_group'] is not None:
-                props['dominant_group_2020'] = acs['dominant_group']
-            if acs['diversity_index'] is not None:
-                props['diversity_index_2020'] = acs['diversity_index']
-            if acs['population'] is not None:
-                props['population_2020'] = acs['population']
-            props['is_sample_data'] = False
+            props['pct_white_2020'] = acs['pct_white']
+            props['pct_black_2020'] = acs['pct_black']
+            props['pct_hispanic_2020'] = acs['pct_hispanic']
+            props['pct_asian_2020'] = acs['pct_asian']
+            props['dominant_group_2020'] = acs['dominant_group']
+            props['diversity_index_2020'] = acs['diversity_index']
+            props['population_2020'] = acs['population']
             matched += 1
         else:
             unmatched += 1

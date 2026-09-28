@@ -1,5 +1,8 @@
 # Capital Flow Tracker — Indicator Methodology
 
+> **Status: not published.** The Capital Flow Tracker was removed from the map because it only ever ran on generated sample data. The pipeline scripts now stop with an error instead of generating samples. Before publishing: (1) run it on real Zillow/Redfin/ACS data, and (2) rename indicator 7 — as defined below, "flip rate" averages the share of homes sold above list and the share off-market within two weeks, which measures market competitiveness, not flipping.
+
+
 ## Overview
 
 The Capital Flow Tracker computes 8 indicators for each Houston zip code, measuring housing market dynamics and displacement risk. Data is sourced from Zillow, Redfin, and the US Census Bureau.
