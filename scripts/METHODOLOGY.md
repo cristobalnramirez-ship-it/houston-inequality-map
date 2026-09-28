@@ -1,6 +1,6 @@
 # Capital Flow Tracker — Indicator Methodology
 
-> **Status: not published.** The Capital Flow Tracker was removed from the map because it only ever ran on generated sample data. The pipeline scripts now stop with an error instead of generating samples. Before publishing: (1) run it on real Zillow/Redfin/ACS data, and (2) rename indicator 7 — as defined below, "flip rate" averages the share of homes sold above list and the share off-market within two weeks, which measures market competitiveness, not flipping.
+> **Status: superseded.** This document describes the original sample-data design, which was never published. The live Capital Flow layer is built by `build_capital_flow.py` from real Zillow ZHVI/ZORI and Census ACS data and shows descriptive measures only (value and rent change, typical value and rent, value-to-income, rent burden, renter share). It has no composite score; the "displacement risk" and "flip rate" definitions below were dropped (as defined, "flip rate" measured market competitiveness, not flipping).
 
 
 ## Overview

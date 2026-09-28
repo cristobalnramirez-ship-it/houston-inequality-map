@@ -24,6 +24,7 @@
     timelineEvents: [],
     narrative: { decade: null, index: 0, dismissed: new Set() },
     politicalType: 'congressional',
+    capitalIndicator: 'value_change_10y',
   };
 
   // ── Colors ─────────────────────────────────────────────────
@@ -105,7 +106,7 @@
     state.map.attributionControl.addAttribution(
       'Redlining: <a href="https://dsl.richmond.edu/panorama/redlining/" target="_blank" rel="noopener">Mapping Inequality</a> (Nelson, Winling et al., CC BY-NC-SA)'
     );
-    ['redlining', 'highways', 'income', 'race', 'floods', 'pollution', 'political'].forEach(function (n) {
+    ['redlining', 'highways', 'income', 'race', 'floods', 'pollution', 'capital', 'political'].forEach(function (n) {
       state.layerGroups[n] = L.layerGroup();
     });
   }
@@ -125,6 +126,7 @@
       income: 'data/census/income_2020.geojson',
       race: 'data/census/race_2020.geojson',
       floods: 'data/environment/flood_zones.geojson',
+      capital: 'data/capital/capital_flow.geojson',
       political: 'data/political/districts.geojson',
     };
     // Optional layer: set to true after scripts/fetch_tri.py has written real EPA TRI data.
@@ -342,8 +344,132 @@
     race: buildRaceLayer,
     floods: buildFloodLayer,
     pollution: buildPollutionLayer,
+    capital: buildCapitalLayer,
     political: buildPoliticalLayer,
   };
+
+
+  // ── Capital Flow (Zillow + Census ACS, by ZIP) ─────────────
+  // Descriptive market indicators only; no composite "risk" score.
+  function signed(v, unit) { return v == null ? 'No data' : (v > 0 ? '+' : '') + v.toFixed(1) + unit; }
+  var DIVERGING = ['#2166ac', '#f7f7f7', '#b2182b'];
+  var CAPITAL_INDICATORS = {
+    value_change_10y: { label: 'Home value change, 10 years', short: '10-yr value change',
+      scale: chroma.scale(['#fff5eb', '#fd8d3c', '#7f2704']).domain([0, 50, 100]), min: '0% or less', max: '+100%',
+      fmt: function (v) { return signed(v, '%'); },
+      desc: 'Change in Zillow’s typical home value (ZHVI), {d10} to {latest}. Not adjusted for inflation.' },
+    value_change_1y: { label: 'Home value change, 1 year', short: '1-yr value change',
+      scale: chroma.scale(DIVERGING).domain([-10, 0, 10]), min: '−10%', max: '+10%',
+      fmt: function (v) { return signed(v, '%'); },
+      desc: 'Change in Zillow’s typical home value (ZHVI), {d1} to {latest}. Blue = falling, red = rising.' },
+    rent_change_3y: { label: 'Rent change, 3 years', short: '3-yr rent change',
+      scale: chroma.scale(DIVERGING).domain([-10, 0, 10]), min: '−10%', max: '+10%',
+      fmt: function (v) { return signed(v, '%'); },
+      desc: 'Change in Zillow’s observed asking rent (ZORI), {d3} to {latest}. Grey where Zillow has too few listings.' },
+    rent_change_1y: { label: 'Rent change, 1 year', short: '1-yr rent change',
+      scale: chroma.scale(DIVERGING).domain([-8, 0, 8]), min: '−8%', max: '+8%',
+      fmt: function (v) { return signed(v, '%'); },
+      desc: 'Change in Zillow’s observed asking rent (ZORI), {d1} to {latest}.' },
+    home_value: { label: 'Typical home value', short: 'Home value',
+      scale: chroma.scale('viridis').domain([100000, 1000000]), min: '$100K', max: '$1M+',
+      fmt: function (v) { return money(v); },
+      desc: 'Zillow Home Value Index (mid-tier homes), {latest}.' },
+    rent: { label: 'Typical asking rent', short: 'Asking rent',
+      scale: chroma.scale('viridis').domain([900, 2500]), min: '$900', max: '$2,500+',
+      fmt: function (v) { return v == null ? 'No data' : money(v) + '/mo'; },
+      desc: 'Zillow Observed Rent Index, {latest}: typical asking rent on new leases, which runs above what existing tenants pay.' },
+    price_to_income: { label: 'Home value to income', short: 'Value ÷ income',
+      scale: chroma.scale(['#ffffcc', '#fd8d3c', '#800026']).domain([2, 5, 8]), min: '2×', max: '8×+',
+      fmt: function (v) { return v == null ? 'No data' : v.toFixed(1) + '×'; },
+      desc: 'Typical home value ({latest}) divided by median household income ({acs}). Higher = less affordable to local earners.' },
+    rent_burdened_pct: { label: 'Rent-burdened renters', short: 'Rent-burdened',
+      scale: chroma.scale(['#ffffcc', '#fd8d3c', '#800026']).domain([25, 50, 75]), min: '25%', max: '75%+',
+      fmt: function (v) { return pct(v); },
+      desc: 'Share of renter households paying 30% or more of income on rent ({acs}).' },
+    renter_pct: { label: 'Renter share', short: 'Renters',
+      scale: chroma.scale(['#f7fbff', '#6baed6', '#08306b']).domain([0, 50, 100]), min: '0%', max: '100%',
+      fmt: function (v) { return pct(v); },
+      desc: 'Share of occupied homes that are rented ({acs}).' },
+  };
+
+  function capitalMeta() {
+    var m = (state.layerData.capital && state.layerData.capital.metadata) || {};
+    var latest = m.latest_month || '';
+    function mo(d) {
+      if (!d) return '';
+      var names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return names[parseInt(d.slice(5, 7), 10) - 1] + ' ' + d.slice(0, 4);
+    }
+    function back(n) { return latest ? (parseInt(latest.slice(0, 4), 10) - n) + latest.slice(4) : ''; }
+    return { latest: mo(latest), d1: mo(back(1)), d3: mo(back(3)), d10: mo(back(10)),
+      acs: 'Census ACS 2020–24', years: m.series_years || [] };
+  }
+  function fillDesc(t) {
+    var m = capitalMeta();
+    return t.replace('{latest}', m.latest).replace('{d1}', m.d1).replace('{d3}', m.d3).replace('{d10}', m.d10).replace(/\{acs\}/g, m.acs);
+  }
+
+  function updateCapitalLegend() {
+    var def = CAPITAL_INDICATORS[state.capitalIndicator];
+    var dom = def.scale.domain();
+    var stops = [];
+    for (var i = 0; i <= 8; i++) stops.push(def.scale(dom[0] + (dom[dom.length - 1] - dom[0]) * i / 8).hex());
+    document.getElementById('capital-gradient').style.background = 'linear-gradient(to right, ' + stops.join(', ') + ')';
+    document.getElementById('capital-range-min').textContent = def.min;
+    document.getElementById('capital-range-max').textContent = def.max;
+    document.getElementById('capital-indicator-desc').textContent = fillDesc(def.desc);
+  }
+
+  function buildCapitalLayer() {
+    var group = state.layerGroups.capital;
+    group.clearLayers();
+    var data = state.layerData.capital;
+    if (!data) return;
+    var key = state.capitalIndicator;
+    var def = CAPITAL_INDICATORS[key];
+    updateCapitalLegend();
+    L.geoJSON(data, {
+      style: function (f) {
+        var v = f.properties[key];
+        return { fillColor: v != null ? def.scale(v).hex() : NO_DATA, fillOpacity: 0.7, color: 'rgba(255,255,255,0.25)', weight: 1 };
+      },
+      onEachFeature: function (f, layer) {
+        onClick(layer, function () { showInfoPanel(f, 'capital'); });
+        layer.bindTooltip(function () {
+          return '<strong>ZIP ' + esc(f.properties.zip) + '</strong><br>' + def.short + ': ' + def.fmt(f.properties[key]);
+        }, { sticky: true, className: 'dark-tooltip' });
+        layer.on('mouseover', function () { layer.setStyle({ fillOpacity: 0.85, weight: 2, color: 'rgba(255,255,255,0.6)' }); });
+        layer.on('mouseout', function () { layer.setStyle({ fillOpacity: 0.7, weight: 1, color: 'rgba(255,255,255,0.25)' }); });
+      },
+    }).addTo(group);
+  }
+
+  function sparkline(values, years, color, fmt) {
+    var pts = values.map(function (v, i) { return v == null ? null : [i, v]; }).filter(Boolean);
+    if (pts.length < 2) return '<p class="info-note">Not enough Zillow data for a trend.</p>';
+    var W = 260, H = 56, pad = 4;
+    var lo = Math.min.apply(null, pts.map(function (p) { return p[1]; }));
+    var hi = Math.max.apply(null, pts.map(function (p) { return p[1]; }));
+    var sx = function (i) { return pad + (W - 2 * pad) * i / (values.length - 1); };
+    var sy = function (v) { return hi === lo ? H / 2 : H - pad - (H - 2 * pad) * (v - lo) / (hi - lo); };
+    var d = pts.map(function (p, k) { return (k ? 'L' : 'M') + sx(p[0]).toFixed(1) + ' ' + sy(p[1]).toFixed(1); }).join(' ');
+    var first = pts[0], last = pts[pts.length - 1];
+    return '<svg class="spark" viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="' + H + '" role="img">' +
+      '<path d="' + d + '" fill="none" stroke="' + color + '" stroke-width="2"/>' +
+      '<circle cx="' + sx(last[0]) + '" cy="' + sy(last[1]) + '" r="3" fill="' + color + '"/></svg>' +
+      '<div class="spark-axis"><span>' + years[first[0]] + ': ' + fmt(first[1]) + '</span><span>' + years[last[0]] + ': ' + fmt(last[1]) + '</span></div>';
+  }
+
+  function initCapitalSelector() {
+    var select = document.getElementById('capital-indicator-select');
+    select.value = state.capitalIndicator;
+    select.addEventListener('change', function () {
+      state.capitalIndicator = select.value;
+      if (state.activeLayers.has('capital')) buildCapitalLayer();
+      else updateCapitalLegend();
+    });
+    if (state.layerData.capital) updateCapitalLegend();
+  }
 
   // ── Info panel ─────────────────────────────────────────────
   function section(title, body) {
@@ -412,6 +538,24 @@
       return '<h3>' + esc(p.facility_name || 'TRI facility') + '</h3>' +
         section('EPA Toxics Release Inventory', row('Industry', esc(p.industry || '—')) + row('TRI ID', esc(p.tri_facility_id || '—'))) +
         section('', note('Registered TRI facility. Release totals are not loaded on this map.'));
+    },
+    capital: function (p) {
+      var m = capitalMeta();
+      var I = CAPITAL_INDICATORS;
+      function r(k) { return row(I[k].short, I[k].fmt(p[k]), k === state.capitalIndicator ? 'color:var(--accent);font-weight:600;' : ''); }
+      return '<h3>ZIP ' + esc(p.zip) + '</h3>' +
+        section('Home values (Zillow, ' + m.latest + ')', r('home_value') + r('value_change_1y') + r('value_change_10y') +
+          sparkline(p.value_series || [], m.years, '#fd8d3c', function (v) { return '$' + Math.round(v / 1000) + 'K'; })) +
+        section('Asking rents (Zillow, ' + m.latest + ')', r('rent') + r('rent_change_1y') + r('rent_change_3y') +
+          sparkline(p.rent_series || [], m.years, '#58a6ff', function (v) { return '$' + Math.round(v).toLocaleString(); })) +
+        section('Residents (' + m.acs + ')',
+          row('Median household income', p.median_income != null ? money(p.median_income) + (p.median_income_moe != null ? ' <span class="moe">± ' + money(p.median_income_moe) + '</span>' : '') : 'No data') +
+          r('price_to_income') + r('rent_burdened_pct') + r('renter_pct') +
+          row('Population', p.population != null ? p.population.toLocaleString() : '—')) +
+        section('', note((p.acs_note ? esc(p.acs_note) + '. ' : '') +
+          'Zillow figures are typical values for the ZIP in nominal dollars; asking rents reflect new leases, not what current tenants pay. ' +
+          'Census figures cover the ZIP Code Tabulation Area. Sources: ' + link('https://www.zillow.com/research/data/', 'Zillow Research') +
+          ', ' + link('https://censusreporter.org/tables/B25070/', 'Census ACS via Census Reporter') + '.'));
     },
     political: function (p) {
       var c = partyColors[p.party] || partyColors.Unknown;
@@ -605,6 +749,7 @@
       initTimeline();
       initNarrative();
       initPoliticalSelector();
+      initCapitalSelector();
       initUI();
       var red = document.getElementById('layer-redlining');
       red.checked = true;

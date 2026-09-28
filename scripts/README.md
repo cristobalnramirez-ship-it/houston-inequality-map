@@ -10,6 +10,7 @@ Python scripts that fetch the map's data from public sources. None of them gener
 | `fetch_tri.py` | EPA Envirofacts REST API | No | TRI toxic release facilities in Harris County |
 | `fetch_census.py` | TIGERweb + Census ACS API | **Yes** (free) | Tract geometry + income/demographics |
 | `fetch_flood_zones.py` | FEMA NFHL ArcGIS REST | No | Flood hazard areas (paginated, may be slow) |
+| `build_capital_flow.py` | Zillow ZHVI/ZORI + Census ACS | No | Builds data/capital/capital_flow.geojson (descriptive indicators, no composite score) |
 
 ## Quick Start
 

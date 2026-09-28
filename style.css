@@ -1031,3 +1031,8 @@ a:hover {
   .narrative-card h3 { font-size: 14px; margin-bottom: 4px; }
   .narrative-card p { font-size: 12px; line-height: 1.45; }
 }
+
+.spark { display: block; margin-top: 6px; }
+.spark-axis { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+.moe { color: var(--text-dim); font-weight: 400; font-size: 11px; }
+.capital-select optgroup { background: #161b22; color: var(--text-muted); }

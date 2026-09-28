@@ -22,6 +22,7 @@ It deploys as-is to any static host (GitHub Pages, Netlify, Vercel).
 | Median household income, poverty | By census tract | U.S. Census Bureau ACS 5-year | 2018–2022 |
 | Race and ethnicity | Majority group by tract | U.S. Census Bureau ACS 5-year | 2018–2022 |
 | Flood zones | FEMA 1% and 0.2% annual-chance zones | FEMA National Flood Hazard Layer (extract) | Current effective FIRMs |
+| Capital Flow | Home-value and rent change, typical values, value-to-income, rent burden, renter share — by ZIP | [Zillow Research](https://www.zillow.com/research/data/) ZHVI and ZORI; Census ACS via [Census Reporter](https://censusreporter.org) | Zillow through Aug 2026; ACS 2020–24 |
 | Political districts | U.S. House, Texas Senate/House, Harris County commissioners, Houston City Council | Census TIGERweb, Harris County, City of Houston; officeholders in `data/political/officeholders.json` | Officeholders as of 2026-09-27 |
 | Timeline | 21 sourced events | Source link on each card | 1937–2022 |
 
@@ -31,7 +32,7 @@ Census layers show one recent period and do not change with the timeline. Estima
 
 - **Historical census decades (1970–2010).** An earlier version displayed modeled values for these decades. They were removed because they were not real data. To add them, download tract data from [NHGIS](https://www.nhgis.org/), harmonize to 2010 tracts (e.g., with the [LTDB](https://s4.ad.brown.edu/projects/diversity/researcher/bridging.htm)), and inflation-adjust incomes.
 - **Toxic release sites.** An earlier version showed sample facilities. The layer is off until real data exists: run `scripts/fetch_tri.py` to write `data/environment/tri_sites.geojson`, then set `LOAD_TRI = true` in `app.js`.
-- **Capital Flow Tracker.** Removed from the map until it runs on real Zillow/Redfin data; the pipeline in `scripts/` now refuses to generate sample values. See `scripts/METHODOLOGY.md`.
+- **A composite "displacement risk" score.** The Capital Flow layer shows descriptive measures only. A risk score should come from a published method (e.g., the Urban Displacement Project typology), not invented weights. Investor-purchase data (HMDA) and corporate ownership (Harris County Appraisal District) are the planned next additions.
 - **SH-288** (which cut through Third Ward) is described in the timeline and freeway notes but not yet drawn.
 
 ## Updating data
@@ -44,6 +45,7 @@ python fetch_census.py YOUR_KEY    # ACS tract geometry + values (free key: api.
 python build_floods.py             # FEMA NFHL, paginated
 python fetch_tri.py                # EPA TRI facilities (optional layer)
 python fetch_political.py          # boundaries; names/parties come from data/political/officeholders.json
+python build_capital_flow.py --zhvi Zip_zhvi_....csv --zori Zip_zori_....csv   # after downloading Zillow's ZIP files
 ```
 
 Update `data/political/officeholders.json` whenever a seat changes.

@@ -115,6 +115,40 @@
         </div>
       </div>
 
+      <div class="layer-group capital-flow-group" id="group-capital">
+        <label class="layer-toggle">
+          <input type="checkbox" id="layer-capital" data-layer="capital">
+          <span class="toggle-switch"></span>
+          <span class="layer-name">Capital Flow (by ZIP)</span>
+        </label>
+        <div class="layer-legend" id="legend-capital">
+          <div class="capital-selector">
+            <label for="capital-indicator-select" class="capital-select-label">Show</label>
+            <select id="capital-indicator-select" class="capital-select">
+              <optgroup label="Home values (Zillow)">
+                <option value="value_change_10y">Home value change, 10 years</option>
+                <option value="value_change_1y">Home value change, 1 year</option>
+                <option value="home_value">Typical home value</option>
+              </optgroup>
+              <optgroup label="Rents (Zillow)">
+                <option value="rent_change_3y">Rent change, 3 years</option>
+                <option value="rent_change_1y">Rent change, 1 year</option>
+                <option value="rent">Typical asking rent</option>
+              </optgroup>
+              <optgroup label="Residents (Census ACS)">
+                <option value="price_to_income">Home value to income</option>
+                <option value="rent_burdened_pct">Rent-burdened renters</option>
+                <option value="renter_pct">Renter share</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="legend-gradient" id="capital-gradient"></div>
+          <div class="legend-range"><span id="capital-range-min"></span><span id="capital-range-max"></span></div>
+          <div class="legend-item"><span class="legend-swatch" style="background:#3a3f47"></span> No data</div>
+          <p class="legend-note" id="capital-indicator-desc"></p>
+        </div>
+      </div>
+
       <div class="layer-group political-flow-group" id="group-political">
         <label class="layer-toggle">
           <input type="checkbox" id="layer-political" data-layer="political">
@@ -183,6 +217,7 @@
         <li><strong>Freeways:</strong> Simplified route lines, drawn only within the study area; dates and neighborhoods from the <a href="https://www.bakerinstitute.org/research/houstons-freeways-who-was-displaced-and-why" target="_blank" rel="noopener">Baker Institute</a>, Erik Slotboom’s <em>Houston Freeways</em>, AARoads and TxDOT history. Sources are linked on each freeway.</li>
         <li><strong>Income, poverty, race &amp; ethnicity:</strong> U.S. Census Bureau, American Community Survey 2018–2022 5-year estimates, by census tract. Suppressed estimates are shown as “No data”.</li>
         <li><strong>Flood zones:</strong> FEMA National Flood Hazard Layer (extract; may be incomplete — check the <a href="https://msc.fema.gov/portal/home" target="_blank" rel="noopener">FEMA Flood Map Service Center</a> for any specific address).</li>
+        <li><strong>Capital Flow:</strong> <a href="https://www.zillow.com/research/data/" target="_blank" rel="noopener">Zillow Research</a> Home Value Index (ZHVI) and Observed Rent Index (ZORI) by ZIP, through Aug 2026; Census ACS 2020–24 5-year estimates by ZIP Code Tabulation Area via <a href="https://censusreporter.org" target="_blank" rel="noopener">Census Reporter</a>. Descriptive measures only — no composite risk score.</li>
         <li><strong>Political districts:</strong> Census TIGERweb, Harris County and City of Houston boundaries; officeholders as of Sept 27, 2026 from official rosters (see <code>data/political/officeholders.json</code>).</li>
       </ul>
       <p class="note">The timeline cards and freeway layer change by decade. Census layers show a single recent period and do not change with the timeline. HOLC maps recorded lending judgments that the FHA and private lenders already applied; historians debate how much the maps themselves caused.</p>
