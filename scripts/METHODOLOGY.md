@@ -1,5 +1,8 @@
 # Capital Flow Tracker — Indicator Methodology
 
+> **Status: superseded.** This document describes the original sample-data design, which was never published. The live Capital Flow layer is built by `build_capital_flow.py` from real Zillow ZHVI/ZORI and Census ACS data and shows descriptive measures only (value and rent change, typical value and rent, value-to-income, rent burden, renter share). It has no composite score; the "displacement risk" and "flip rate" definitions below were dropped (as defined, "flip rate" measured market competitiveness, not flipping).
+
+
 ## Overview
 
 The Capital Flow Tracker computes 8 indicators for each Houston zip code, measuring housing market dynamics and displacement risk. Data is sourced from Zillow, Redfin, and the US Census Bureau.

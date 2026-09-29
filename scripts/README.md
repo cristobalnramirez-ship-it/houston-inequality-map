@@ -1,16 +1,16 @@
 # Data Pipeline Scripts
 
-Python scripts to fetch real data from public APIs. These replace the sample data files shipped with the project.
+Python scripts that fetch the map's data from public sources. None of them generate sample or placeholder values: if a source can't be reached, they stop with an error.
 
 ## Scripts
 
 | Script | Source | API Key? | Notes |
 |--------|--------|----------|-------|
-| `fetch_redlining.py` | Mapping Inequality / DSL Richmond | No | Downloads HOLC GeoJSON for Houston |
+| `fetch_redlining.py` | Mapping Inequality census crosswalk | No | Downloads HOLC areas and dissolves tract-split pieces (needs `shapely`) |
 | `fetch_tri.py` | EPA Envirofacts REST API | No | TRI toxic release facilities in Harris County |
 | `fetch_census.py` | TIGERweb + Census ACS API | **Yes** (free) | Tract geometry + income/demographics |
 | `fetch_flood_zones.py` | FEMA NFHL ArcGIS REST | No | Flood hazard areas (paginated, may be slow) |
-| `process_highways.py` | Manually curated | No | Generates highway GeoJSON from embedded data |
+| `build_capital_flow.py` | Zillow ZHVI/ZORI + Census ACS | No | Builds data/capital/capital_flow.geojson (descriptive indicators, no composite score) |
 
 ## Quick Start
 
@@ -18,7 +18,6 @@ Python scripts to fetch real data from public APIs. These replace the sample dat
 # No API key needed
 python fetch_redlining.py
 python fetch_tri.py
-python process_highways.py
 
 # Slow — FEMA API can take several minutes
 python fetch_flood_zones.py
@@ -51,4 +50,4 @@ For historical census decades (1970-2000), data must be manually obtained from:
 
 ## Output
 
-All scripts write to the `../data/` directory, overwriting existing sample files.
+All scripts write to the `../data/` directory. Freeway attributes (dates, neighborhoods, sources) are curated directly in `data/infrastructure/highways.geojson`.

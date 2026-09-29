@@ -192,8 +192,7 @@ def main():
         print(f"  python {sys.argv[0]} YOUR_API_KEY")
         print("  or set CENSUS_API_KEY environment variable")
         print()
-        print("Generating sample data instead...")
-        generate_sample_data()
+        raise SystemExit("A Census API key is required; sample-data generation was removed.")
         return
 
     rows = fetch_acs(api_key)
@@ -201,115 +200,13 @@ def main():
         output = os.path.join(DATA_DIR, 'census_acs_zip.csv')
         save_csv(rows, output)
     else:
-        print("  No data retrieved. Generating sample data instead...")
-        generate_sample_data()
+        raise SystemExit("No data retrieved from the Census API.")
 
     print()
     print("Variables fetched:")
     for code, label, desc in VARIABLES:
         print(f"  {label}: {desc}")
 
-
-def generate_sample_data():
-    """Generate sample ACS data for development/testing."""
-    import random
-    random.seed(42)
-
-    print("  Generating sample Census ACS data for Houston zip codes...")
-
-    # Neighborhood profiles (zip -> approximate characteristics)
-    profiles = {
-        # Inner Loop affluent
-        '77005': {'income': 125000, 'rent': 1800, 'home_val': 650000, 'owner_pct': 0.55, 'pop': 22000},
-        '77006': {'income': 85000, 'rent': 1600, 'home_val': 480000, 'owner_pct': 0.35, 'pop': 28000},
-        '77019': {'income': 160000, 'rent': 2200, 'home_val': 850000, 'owner_pct': 0.50, 'pop': 18000},
-        '77024': {'income': 185000, 'rent': 2400, 'home_val': 920000, 'owner_pct': 0.70, 'pop': 35000},
-        '77027': {'income': 130000, 'rent': 2000, 'home_val': 700000, 'owner_pct': 0.45, 'pop': 15000},
-        '77046': {'income': 110000, 'rent': 1900, 'home_val': 550000, 'owner_pct': 0.40, 'pop': 12000},
-        '77098': {'income': 95000, 'rent': 1700, 'home_val': 520000, 'owner_pct': 0.38, 'pop': 20000},
-        # Gentrifying / transitional
-        '77002': {'income': 72000, 'rent': 1500, 'home_val': 380000, 'owner_pct': 0.25, 'pop': 15000},
-        '77003': {'income': 55000, 'rent': 1200, 'home_val': 320000, 'owner_pct': 0.40, 'pop': 18000},
-        '77004': {'income': 48000, 'rent': 1100, 'home_val': 285000, 'owner_pct': 0.42, 'pop': 32000},
-        '77007': {'income': 90000, 'rent': 1650, 'home_val': 490000, 'owner_pct': 0.45, 'pop': 35000},
-        '77008': {'income': 82000, 'rent': 1550, 'home_val': 420000, 'owner_pct': 0.50, 'pop': 40000},
-        '77009': {'income': 65000, 'rent': 1300, 'home_val': 350000, 'owner_pct': 0.45, 'pop': 38000},
-        '77018': {'income': 70000, 'rent': 1250, 'home_val': 340000, 'owner_pct': 0.55, 'pop': 35000},
-        # Historically marginalized / high displacement risk
-        '77011': {'income': 38000, 'rent': 900, 'home_val': 160000, 'owner_pct': 0.45, 'pop': 25000},
-        '77012': {'income': 42000, 'rent': 950, 'home_val': 175000, 'owner_pct': 0.50, 'pop': 30000},
-        '77016': {'income': 32000, 'rent': 850, 'home_val': 120000, 'owner_pct': 0.50, 'pop': 28000},
-        '77020': {'income': 35000, 'rent': 880, 'home_val': 140000, 'owner_pct': 0.48, 'pop': 22000},
-        '77021': {'income': 38000, 'rent': 920, 'home_val': 165000, 'owner_pct': 0.45, 'pop': 27000},
-        '77022': {'income': 36000, 'rent': 870, 'home_val': 145000, 'owner_pct': 0.42, 'pop': 20000},
-        '77023': {'income': 40000, 'rent': 950, 'home_val': 180000, 'owner_pct': 0.48, 'pop': 35000},
-        '77026': {'income': 28000, 'rent': 800, 'home_val': 95000, 'owner_pct': 0.45, 'pop': 18000},
-        '77028': {'income': 30000, 'rent': 820, 'home_val': 105000, 'owner_pct': 0.48, 'pop': 15000},
-        '77029': {'income': 35000, 'rent': 860, 'home_val': 130000, 'owner_pct': 0.52, 'pop': 22000},
-        '77033': {'income': 33000, 'rent': 840, 'home_val': 115000, 'owner_pct': 0.50, 'pop': 20000},
-        '77051': {'income': 30000, 'rent': 810, 'home_val': 100000, 'owner_pct': 0.48, 'pop': 16000},
-        '77076': {'income': 36000, 'rent': 880, 'home_val': 150000, 'owner_pct': 0.45, 'pop': 25000},
-        '77078': {'income': 32000, 'rent': 830, 'home_val': 110000, 'owner_pct': 0.50, 'pop': 12000},
-        '77087': {'income': 38000, 'rent': 900, 'home_val': 155000, 'owner_pct': 0.48, 'pop': 35000},
-        '77091': {'income': 42000, 'rent': 950, 'home_val': 185000, 'owner_pct': 0.52, 'pop': 28000},
-        '77093': {'income': 34000, 'rent': 850, 'home_val': 125000, 'owner_pct': 0.48, 'pop': 30000},
-        # Suburban / outer ring
-        '77030': {'income': 68000, 'rent': 1400, 'home_val': 350000, 'owner_pct': 0.35, 'pop': 20000},
-        '77025': {'income': 72000, 'rent': 1350, 'home_val': 320000, 'owner_pct': 0.55, 'pop': 30000},
-        '77031': {'income': 50000, 'rent': 1050, 'home_val': 200000, 'owner_pct': 0.50, 'pop': 35000},
-        '77035': {'income': 75000, 'rent': 1300, 'home_val': 310000, 'owner_pct': 0.65, 'pop': 32000},
-        '77036': {'income': 45000, 'rent': 1000, 'home_val': 190000, 'owner_pct': 0.40, 'pop': 55000},
-        '77040': {'income': 58000, 'rent': 1150, 'home_val': 230000, 'owner_pct': 0.55, 'pop': 40000},
-        '77042': {'income': 70000, 'rent': 1350, 'home_val': 290000, 'owner_pct': 0.50, 'pop': 30000},
-        '77045': {'income': 45000, 'rent': 1000, 'home_val': 180000, 'owner_pct': 0.55, 'pop': 25000},
-        '77047': {'income': 42000, 'rent': 960, 'home_val': 170000, 'owner_pct': 0.52, 'pop': 28000},
-        '77048': {'income': 40000, 'rent': 940, 'home_val': 160000, 'owner_pct': 0.50, 'pop': 20000},
-        '77054': {'income': 52000, 'rent': 1100, 'home_val': 240000, 'owner_pct': 0.35, 'pop': 18000},
-        '77056': {'income': 115000, 'rent': 1950, 'home_val': 600000, 'owner_pct': 0.40, 'pop': 22000},
-        '77057': {'income': 65000, 'rent': 1300, 'home_val': 280000, 'owner_pct': 0.35, 'pop': 25000},
-        '77074': {'income': 42000, 'rent': 1000, 'home_val': 175000, 'owner_pct': 0.40, 'pop': 38000},
-    }
-
-    rows = []
-    for zip_code in HOUSTON_ZIPS:
-        p = profiles.get(zip_code, {
-            'income': random.randint(35000, 75000),
-            'rent': random.randint(800, 1400),
-            'home_val': random.randint(120000, 350000),
-            'owner_pct': random.uniform(0.35, 0.65),
-            'pop': random.randint(15000, 50000),
-        })
-
-        total_housing = int(p['pop'] / 2.5)
-        owner = int(total_housing * p['owner_pct'])
-        renter = total_housing - owner
-        vacant = int(total_housing * random.uniform(0.05, 0.12))
-
-        # Add some noise
-        noise = lambda v, pct=0.05: int(v * (1 + random.uniform(-pct, pct)))
-
-        rows.append({
-            'zip': zip_code,
-            'name': f"ZCTA5 {zip_code}",
-            'median_household_income': noise(p['income']),
-            'median_gross_rent': noise(p['rent']),
-            'median_home_value': noise(p['home_val']),
-            'total_population': noise(p['pop'], 0.03),
-            'total_occupied_housing': total_housing,
-            'owner_occupied': owner,
-            'renter_occupied': renter,
-            'median_rent_burden_pct': round(p['rent'] * 12 / p['income'] * 100, 1),
-            'pop_white': int(p['pop'] * random.uniform(0.15, 0.60)),
-            'pop_black': int(p['pop'] * random.uniform(0.10, 0.50)),
-            'pop_hispanic': int(p['pop'] * random.uniform(0.15, 0.60)),
-            'pop_asian': int(p['pop'] * random.uniform(0.02, 0.20)),
-            'total_housing_units': total_housing + vacant,
-            'vacant_housing_units': vacant,
-        })
-
-    output = os.path.join(DATA_DIR, 'census_acs_zip.csv')
-    save_csv(rows, output)
-    print(f"  Generated sample data for {len(rows)} Houston zip codes")
 
 
 if __name__ == '__main__':

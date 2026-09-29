@@ -18,39 +18,45 @@ while x < bbox['xmax']:
     y = bbox['ymin']
     while y < bbox['ymax']:
         geom = '%f,%f,%f,%f' % (x, y, min(x+tile_size, bbox['xmax']), min(y+tile_size, bbox['ymax']))
-        params = (
-            'where=1%%3D1'
-            '&geometry=%s'
-            '&geometryType=esriGeometryEnvelope'
-            '&inSR=4326'
-            '&spatialRel=esriSpatialRelIntersects'
-            '&outFields=FLD_ZONE,ZONE_SUBTY,SFHA_TF'
-            '&returnGeometry=true'
-            '&outSR=4326'
-            '&f=geojson'
-            '&resultRecordCount=200'
-        ) % geom
-        url = base_url + '?' + params
-
+        offset = 0
         try:
-            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-            resp = urllib.request.urlopen(req, timeout=30)
-            data = json.loads(resp.read())
-            feats = data.get('features', [])
-            for f in feats:
-                # Deduplicate by first coordinate
-                g = f['geometry']
-                if g and g.get('coordinates'):
-                    coords = g['coordinates']
-                    if g['type'] == 'Polygon' and coords and coords[0]:
-                        key = (coords[0][0][0], coords[0][0][1]) if coords[0] else None
-                    elif g['type'] == 'MultiPolygon' and coords and coords[0] and coords[0][0]:
-                        key = (coords[0][0][0][0], coords[0][0][0][1])
-                    else:
-                        key = None
-                    if key and key not in seen_geoms:
-                        seen_geoms.add(key)
-                        all_features.append(f)
+            while True:
+                params = (
+                    'where=1%%3D1'
+                    '&geometry=%s'
+                    '&geometryType=esriGeometryEnvelope'
+                    '&inSR=4326'
+                    '&spatialRel=esriSpatialRelIntersects'
+                    '&outFields=FLD_ZONE,ZONE_SUBTY,SFHA_TF'
+                    '&returnGeometry=true'
+                    '&outSR=4326'
+                    '&f=geojson'
+                    '&resultRecordCount=200'
+                    '&resultOffset=%d'
+                ) % (geom, offset)
+                url = base_url + '?' + params
+                req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+                resp = urllib.request.urlopen(req, timeout=30)
+                data = json.loads(resp.read())
+                feats = data.get('features', [])
+                for f in feats:
+                    g = f['geometry']
+                    if g and g.get('coordinates'):
+                        coords = g['coordinates']
+                        if g['type'] == 'Polygon' and coords and coords[0]:
+                            key = (coords[0][0][0], coords[0][0][1]) if coords[0] else None
+                        elif g['type'] == 'MultiPolygon' and coords and coords[0] and coords[0][0]:
+                            key = (coords[0][0][0][0], coords[0][0][0][1])
+                        else:
+                            key = None
+                        if key and key not in seen_geoms:
+                            seen_geoms.add(key)
+                            all_features.append(f)
+                # Page until the server stops returning full pages
+                if len(feats) < 200 and not data.get('exceededTransferLimit'):
+                    break
+                offset += len(feats)
+                time.sleep(0.3)
             tile_count += 1
         except Exception as e:
             print('Tile error at %.2f,%.2f: %s' % (x, y, e))
@@ -123,7 +129,6 @@ for feat in all_features:
         'flood_risk': info['flood_risk'],
         'zone_description': info['desc'],
         'sfha': sfha,
-        'is_sample_data': False,
     }
 
     simp_geom = simplify_geom(feat['geometry'])
@@ -136,11 +141,6 @@ for feat in all_features:
 print('Output features: %d (filtered from %d)' % (len(output_features), len(all_features)))
 
 # Write
-with open('data/environment/flood_zones.geojson') as f:
-    orig = json.load(f)
-with open('data/environment/flood_zones_original.geojson', 'w') as f:
-    json.dump(orig, f)
-
 with open('data/environment/flood_zones.geojson', 'w') as f:
     json.dump({'type': 'FeatureCollection', 'features': output_features}, f)
 

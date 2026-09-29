@@ -338,103 +338,6 @@ def compute_all_indicators(census, redfin, zhvi, zori):
     return raw
 
 
-def generate_sample_indicators():
-    """Generate sample indicator data when real data isn't available."""
-    random.seed(42)
-    print("  No pre-computed data available. Generating sample indicators...")
-
-    # Load census data (may also be sample)
-    census = load_census()
-    if not census:
-        print("  ERROR: No census data found. Run fetch_census_acs.py first.")
-        print("         (Run with no API key to generate sample data)")
-        return None
-
-    all_zips = sorted(census.keys())
-    raw = {}
-
-    for z in all_zips:
-        c = census.get(z, {})
-        income = c.get('income', 50000)
-        rent = c.get('rent', 1000)
-        home_val = c.get('home_value', 200000)
-        renter = c.get('renter_occupied', 5000)
-        owner = c.get('owner_occupied', 5000)
-        total_h = c.get('total_housing', 12000)
-        vacant = c.get('vacant', 800)
-        pop = c.get('population', 25000)
-        rent_burden = c.get('rent_burden_pct', 30)
-
-        # Generate correlated indicators based on neighborhood characteristics
-        # Affluent areas: high prices, low yield, low displacement risk
-        # Marginal areas: high displacement risk, high investor activity
-        wealth_factor = (income or 50000) / 100000  # 0.3 - 1.8
-        risk_factor = max(0.1, 1.5 - wealth_factor)  # inverse of wealth
-
-        noise = lambda: random.uniform(0.85, 1.15)
-
-        # 1. Listing Velocity (0.5 - 3.0 range)
-        listing_vel = (0.8 + risk_factor * 0.6 + random.uniform(-0.3, 0.5)) * noise()
-        listing_vel = round(max(0.3, min(3.5, listing_vel)), 2)
-
-        # 2. Price Trajectory (% 3-year growth)
-        # Gentrifying areas have high growth, established areas moderate
-        base_growth = 15 + risk_factor * 20 + random.uniform(-8, 12)
-        price_traj = round(max(-5, min(65, base_growth * noise())), 1)
-
-        # 3. Rental Yield
-        if home_val and home_val > 0:
-            rental_yield = round((rent * 12 / home_val) * 100, 2)
-        else:
-            rental_yield = round(5 + random.uniform(-1, 2), 2)
-
-        # 4. Investor Activity (0-100)
-        inv_base = risk_factor * 40 + listing_vel * 10 + random.uniform(-5, 15)
-        investor_act = round(clamp(inv_base * noise(), 5, 95), 1)
-
-        # 5. DOM Shift (negative = getting hotter)
-        dom_shift = round(-(risk_factor * 8 + random.uniform(-5, 3)), 1)
-
-        # 6. Displacement Risk (0-100)
-        renter_share = renter / (renter + owner) if (renter + owner) > 0 else 0.5
-        vacancy_rate = vacant / total_h if total_h > 0 else 0.08
-
-        disp_risk = (
-            0.25 * min(100, max(0, price_traj * 2.5)) +
-            0.20 * investor_act +
-            0.20 * min(100, max(0, (rent_burden or 30) * 2)) +
-            0.15 * min(100, max(0, vacancy_rate * 600)) +
-            0.10 * min(100, max(0, 100 - income / 2000)) +
-            0.10 * (renter_share * 100)
-        )
-        displacement_risk = round(clamp(disp_risk * noise(), 5, 98), 1)
-
-        # 7. Flip Rate (%)
-        flip = max(1, min(25, risk_factor * 8 + listing_vel * 2 + random.uniform(-2, 5)))
-        flip_rate = round(flip * noise(), 1)
-
-        # 8. Affordability Cliff
-        if income and income > 0:
-            afford = home_val / (income * 4)
-        else:
-            afford = 1.5
-        affordability_cliff = round(max(0.3, min(4.0, afford * noise())), 2)
-
-        raw[z] = {
-            'listing_velocity': listing_vel,
-            'price_trajectory': price_traj,
-            'rental_yield': rental_yield,
-            'investor_activity': investor_act,
-            'dom_shift': dom_shift,
-            'displacement_risk': displacement_risk,
-            'flip_rate': flip_rate,
-            'affordability_cliff': affordability_cliff,
-        }
-
-    return raw
-
-
-# ── Output ───────────────────────────────────────────────────
 
 def save_indicators(raw, output_path):
     """Save computed indicators to CSV."""
@@ -492,7 +395,8 @@ def main():
         if census:
             print(f"  Census data: {len(census)} zip codes")
             print(f"  No Redfin or Zillow data found — using census-based estimates")
-        raw = generate_sample_indicators()
+        raise SystemExit("No Zillow/Redfin data found. Run fetch_zillow.py and fetch_redfin.py first. "
+                         "(Sample-data generation was removed so fabricated values can never be published.)")
 
     if raw:
         output = os.path.join(DATA_DIR, 'indicators_by_zip.csv')
