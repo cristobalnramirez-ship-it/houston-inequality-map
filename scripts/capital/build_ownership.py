@@ -36,7 +36,7 @@ from collections import Counter, defaultdict
 from datetime import date, datetime
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from owner_classes import classify, INVESTOR_TYPES  # noqa: E402
+from owner_classes import classify, operator, normalize, INVESTOR_TYPES  # noqa: E402
 
 MIN_HOMES, MIN_SALES = 50, 20
 csv.field_size_limit(10 ** 8)
@@ -140,6 +140,7 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--asof', default=date.today().isoformat(), help='reference date for "recent" (YYYY-MM-DD)')
     ap.add_argument('--inspect', action='store_true')
+    ap.add_argument('--report', help='also write a CSV of the largest company owners and shared mailing addresses (for checking the rules)')
     args = ap.parse_args()
     asof = date.fromisoformat(args.asof)
     cutoff = date(asof.year - 3, asof.month, min(asof.day, 28))
@@ -147,12 +148,20 @@ def main():
     rows = rows_hcad(args.input) if args.source == 'hcad' else rows_cameron(args.input, args.inspect)
     z = defaultdict(Counter)
     types_all = Counter()
+    ops = Counter()
+    top_names, top_mail = Counter(), Counter()
     has_dates = False
     for row in rows:
         if not row['zip'] or not row['cls'].startswith('A1'):
             continue
         t = classify(row['owner'])
         types_all[t] += 1
+        op = operator(row['owner'])
+        if op:
+            ops[op] += 1
+        if t in INVESTOR_TYPES or t == 'unknown':
+            top_names[(normalize(row['owner']), t, op or '')] += 1
+            top_mail[(norm_addr(row['mail_addr']), row['mail_state'])] += 1
         c = z[row['zip']]
         c['homes'] += 1
         c['t_' + t] += 1
@@ -184,10 +193,21 @@ def main():
             'recent_company_pct': share(c['recent_investor'], c['recent'], MIN_SALES) if has_dates else None,
         }
     meta = {'source': args.source, 'asof': args.asof, 'recent_since': cutoff.isoformat(),
-            'owner_type_counts': dict(types_all), 'min_homes': MIN_HOMES, 'min_recent_sales': MIN_SALES}
+            'owner_type_counts': dict(types_all), 'operator_counts': dict(ops.most_common()),
+            'min_homes': MIN_HOMES, 'min_recent_sales': MIN_SALES}
     with open(args.out, 'w', encoding='utf-8') as f:
         json.dump({'metadata': meta, 'zips': out}, f, indent=1)
     print(f"{len(out)} ZIPs, {sum(types_all.values())} single-family homes; owner types: {dict(types_all)}")
+    print('Large operators:', dict(ops.most_common()))
+    if args.report:
+        with open(args.report, 'w', newline='', encoding='utf-8') as f:
+            w = csv.writer(f)
+            w.writerow(['kind', 'key', 'type', 'operator', 'homes'])
+            for (n, t, op), k in top_names.most_common(500):
+                w.writerow(['owner_name', n, t, op, k])
+            for (a, st), k in top_mail.most_common(300):
+                w.writerow(['mailing_address', f'{a}, {st}', '', '', k])
+        print('Report:', args.report)
 
 
 if __name__ == '__main__':

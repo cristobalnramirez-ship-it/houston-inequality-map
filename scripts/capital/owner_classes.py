@@ -22,16 +22,24 @@ ownership, not a measurement of it.
 import re
 
 # Large single-family rental operators and their common holding-entity names.
-INSTITUTIONAL = [
-    r'INVITATION HOMES', r'\bIH[2-6] PROPERTY', r'\bTHR PROPERTY', r'2018[- ]?\d+ IH BORROWER',
-    r'AMERICAN HOMES 4 RENT', r'\bAMH\b', r'\bARP [0-9]', r'\bAH4R\b',
-    r'PROGRESS RESIDENTIAL', r'\bPROGRESS (AUSTIN|DALLAS|HOUSTON|SAN ANTONIO)',
-    r'\bFKH SFR', r'FIRSTKEY HOMES', r'CERBERUS SFR',
-    r'\bTRICON\b', r'\bSFR JV-?\d', r'\bSFR [IVX]+ ',
-    r'MAIN STREET RENEWAL', r'\bMSR\b',
-    r'VINEBROOK', r'PATHLIGHT', r'HOME PARTNERS OF AMERICA', r'\bHPA (TEXAS|US|BORROWER|II|I)\b',
-    r'AMHERST', r'\bBRE SELECT', r'RESICAP', r'OPENDOOR', r'OFFERPAD',
+# Parent company for each large operator, for checking totals against published counts
+# (e.g. Kinder Institute, Jan 2026: nine institutional investors, ~11,000 Harris County homes in 2024).
+# iBuyers (Opendoor, Offerpad) hold homes briefly for resale and are reported separately.
+OPERATORS = [
+    ('Invitation Homes', r'INVITATION HOMES|\bIH[2-6] PROPERTY|\bTHR PROPERTY|\bIH BORROWER|\bINVH\b'),
+    ('American Homes 4 Rent (AMH)', r'AMERICAN HOMES 4 RENT|\bAMH\b|\bARP [0-9]|\bAH4R\b|AMERICAN RESIDENTIAL PROPERTIES'),
+    ('Pretium (Progress Residential)', r'PROGRESS RESIDENTIAL|\bPROGRESS (AUSTIN|DALLAS|HOUSTON|SAN ANTONIO)|PRETIUM|FRONT YARD RESIDENTIAL'),
+    ('Cerberus (FirstKey Homes)', r'\bFKH SFR|FIRSTKEY HOMES|CERBERUS SFR'),
+    ('Tricon', r'\bTRICON\b|\bSFR JV-?\d|\bSFR [IVX]+ '),
+    ('Amherst (Main Street Renewal)', r'MAIN STREET RENEWAL|\bMSR\b|AMHERST'),
+    ('Blackstone (Home Partners)', r'HOME PARTNERS OF AMERICA|\bHPA (TEXAS|US|BORROWER|II|I)\b|\bBRE SELECT'),
+    ('VineBrook', r'VINEBROOK'),
+    ('Pathlight', r'PATHLIGHT'),
+    ('ResiCap', r'RESICAP'),
+    ('iBuyer: Opendoor', r'OPENDOOR'),
+    ('iBuyer: Offerpad', r'OFFERPAD'),
 ]
+INSTITUTIONAL = [p for label, p in OPERATORS if not label.startswith('iBuyer')]  # iBuyers count as 'company'
 
 BUILDERS = [
     r'\bD ?R HORTON', r'\bLENNAR', r'PERRY HOMES', r'MERITAGE', r'\bKB HOME', r'TAYLOR MORRISON',
@@ -88,6 +96,13 @@ def classify(name):
 
 INVESTOR_TYPES = {'institutional', 'company'}
 
+_operators = [(n, re.compile(p)) for n, p in OPERATORS]
+
+
+def operator(name):
+    n = ' ' + normalize(name) + ' '
+    return next((label for label, rx in _operators if rx.search(n)), None)
+
 
 if __name__ == '__main__':
     tests = {
@@ -101,4 +116,8 @@ if __name__ == '__main__':
         'HOUSTON HOUSING AUTHORITY': 'public',
     }
     bad = {k: (classify(k), v) for k, v in tests.items() if classify(k) != v}
+    # every institutional name should map to an operator, and vice versa
+    for k, v in tests.items():
+        if (v == 'institutional') != bool(operator(k)):
+            bad[k] = ('operator', operator(k))
     print('all rules pass' if not bad else bad)
