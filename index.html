@@ -140,12 +140,41 @@
                 <option value="rent_burdened_pct">Rent-burdened renters</option>
                 <option value="renter_pct">Renter share</option>
               </optgroup>
+              <optgroup label="Owners (appraisal district)">
+                <option value="company_owned_pct">Homes owned by companies</option>
+                <option value="recent_company_pct">Recent buyers that are companies</option>
+                <option value="institutional_pct">Homes owned by large rental operators</option>
+                <option value="out_of_state_owner_pct">Owners mailing from outside Texas</option>
+              </optgroup>
             </select>
           </div>
           <div class="legend-gradient" id="capital-gradient"></div>
           <div class="legend-range"><span id="capital-range-min"></span><span id="capital-range-max"></span></div>
           <div class="legend-item"><span class="legend-swatch" style="background:#3a3f47"></span> No data</div>
           <p class="legend-note" id="capital-indicator-desc"></p>
+        </div>
+      </div>
+
+      <div class="layer-group capital-flow-group" id="group-lending">
+        <label class="layer-toggle">
+          <input type="checkbox" id="layer-lending" data-layer="lending">
+          <span class="toggle-switch"></span>
+          <span class="layer-name">Mortgage Lending (by tract)</span>
+        </label>
+        <div class="layer-legend" id="legend-lending">
+          <div class="capital-selector">
+            <label for="lending-indicator-select" class="capital-select-label">Show</label>
+            <select id="lending-indicator-select" class="capital-select">
+              <option value="investor_share">Mortgages for investment properties</option>
+              <option value="denial_rate">Mortgage denial rate</option>
+              <option value="hispanic_share">Loans to Hispanic or Latino buyers</option>
+              <option value="black_share">Loans to Black buyers</option>
+            </select>
+          </div>
+          <div class="legend-gradient" id="lending-gradient"></div>
+          <div class="legend-range"><span id="lending-range-min"></span><span id="lending-range-max"></span></div>
+          <div class="legend-item"><span class="legend-swatch" style="background:#3a3f47"></span> Too few loans to report</div>
+          <p class="legend-note" id="lending-indicator-desc"></p>
         </div>
       </div>
 
@@ -218,6 +247,7 @@
         <li><strong>Income, poverty, race &amp; ethnicity:</strong> U.S. Census Bureau, American Community Survey 2018–2022 5-year estimates, by census tract. Suppressed estimates are shown as “No data”.</li>
         <li><strong>Flood zones:</strong> FEMA National Flood Hazard Layer (extract; may be incomplete — check the <a href="https://msc.fema.gov/portal/home" target="_blank" rel="noopener">FEMA Flood Map Service Center</a> for any specific address).</li>
         <li><strong>Capital Flow:</strong> <a href="https://www.zillow.com/research/data/" target="_blank" rel="noopener">Zillow Research</a> Home Value Index (ZHVI) and Observed Rent Index (ZORI) by ZIP, through Aug 2026; Census ACS 2020–24 5-year estimates by ZIP Code Tabulation Area via <a href="https://censusreporter.org" target="_blank" rel="noopener">Census Reporter</a>. Descriptive measures only — no composite risk score.</li>
+        <li><strong>Mortgage lending:</strong> Home Mortgage Disclosure Act loan records from the <a href="https://ffiec.cfpb.gov/data-browser/" target="_blank" rel="noopener">CFPB HMDA Data Browser</a>, by 2020 census tract. <strong>Home ownership</strong> (in Capital Flow): Harris Central Appraisal District records, with owner types assigned by published keyword rules (<code>scripts/capital/owner_classes.py</code>).</li>
         <li><strong>Political districts:</strong> Census TIGERweb, Harris County and City of Houston boundaries; officeholders as of Sept 27, 2026 from official rosters (see <code>data/political/officeholders.json</code>).</li>
       </ul>
       <p class="note">The timeline cards and freeway layer change by decade. Census layers show a single recent period and do not change with the timeline. HOLC maps recorded lending judgments that the FHA and private lenders already applied; historians debate how much the maps themselves caused.</p>

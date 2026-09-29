@@ -84,6 +84,14 @@ def main():
         t = acs.get('86000US' + g, {}).get(k[:6], {})
         return (t.get('error') or {}).get(k)
 
+    own_path = os.path.join(CAP, 'ownership_zip.json')
+    own = {}
+    own_meta = None
+    if os.path.exists(own_path):  # optional: built by capital/build_ownership.py from HCAD records
+        with open(own_path, encoding='utf-8') as f:
+            o = json.load(f)
+        own, own_meta = o['zips'], o['metadata']
+
     feats = []
     for ft in geo['features']:
         z = ft['properties']['zip']
@@ -115,6 +123,10 @@ def main():
             'value_series': [round(v[d]) if v.get(d) else None for d in [back(k) for k in range(10, -1, -1)]],
             'rent_series': [round(r[d]) if r.get(d) else None for d in [back(k) for k in range(10, -1, -1)]],
         }
+        for k in ('homes', 'company_owned_pct', 'institutional_pct', 'out_of_state_owner_pct',
+                  'absentee_pct', 'recent_sales', 'recent_company_pct'):
+            if z in own:
+                p[k] = own[z].get(k)
         if not inc_reliable:
             p['acs_note'] = 'Income estimate unreliable (small population or margin of error above 30%)'
         feats.append({'type': 'Feature', 'properties': p, 'geometry': ft['geometry']})
@@ -123,6 +135,7 @@ def main():
         'latest_month': latest,
         'series_years': [int(y) - k for k in range(10, -1, -1)],
         'acs_release': release,
+        'ownership': own_meta,
         'sources': {
             'zhvi': 'https://www.zillow.com/research/data/ (ZHVI, all homes, mid-tier, SA)',
             'zori': 'https://www.zillow.com/research/data/ (ZORI, all homes + multifamily)',
