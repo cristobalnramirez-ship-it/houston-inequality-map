@@ -13,6 +13,7 @@
   var DECADE_MIN = 1930;
   var DECADE_MAX = 2020;
   var LOAD_TRI = false;
+  var LOAD_LENDING = true;  // data/capital/hmda_tracts.geojson, built by scripts/capital/build_hmda_tracts.py
 
   // ── State ──────────────────────────────────────────────────
   var state = {
@@ -25,6 +26,7 @@
     narrative: { decade: null, index: 0, dismissed: new Set() },
     politicalType: 'congressional',
     capitalIndicator: 'value_change_10y',
+    lendingIndicator: 'investor_share',
   };
 
   // ── Colors ─────────────────────────────────────────────────
@@ -106,7 +108,7 @@
     state.map.attributionControl.addAttribution(
       'Redlining: <a href="https://dsl.richmond.edu/panorama/redlining/" target="_blank" rel="noopener">Mapping Inequality</a> (Nelson, Winling et al., CC BY-NC-SA)'
     );
-    ['redlining', 'highways', 'income', 'race', 'floods', 'pollution', 'capital', 'political'].forEach(function (n) {
+    ['redlining', 'highways', 'income', 'race', 'floods', 'pollution', 'capital', 'lending', 'political'].forEach(function (n) {
       state.layerGroups[n] = L.layerGroup();
     });
   }
@@ -131,6 +133,7 @@
     };
     // Optional layer: set to true after scripts/fetch_tri.py has written real EPA TRI data.
     if (LOAD_TRI) files.pollution = 'data/environment/tri_sites.geojson';
+    if (LOAD_LENDING) files.lending = 'data/capital/hmda_tracts.geojson';
     var loads = Object.keys(files).map(function (k) {
       return getJSON(files[k]).then(function (d) { state.layerData[k] = d; });
     });
@@ -345,6 +348,7 @@
     floods: buildFloodLayer,
     pollution: buildPollutionLayer,
     capital: buildCapitalLayer,
+    lending: buildLendingLayer,
     political: buildPoliticalLayer,
   };
 
@@ -390,6 +394,22 @@
       scale: chroma.scale(['#f7fbff', '#6baed6', '#08306b']).domain([0, 50, 100]), min: '0%', max: '100%',
       fmt: function (v) { return pct(v); },
       desc: 'Share of occupied homes that are rented ({acs}).' },
+    company_owned_pct: { label: 'Homes owned by companies', short: 'Company-owned',
+      scale: chroma.scale(['#f2f0f7', '#9e9ac8', '#3f007d']).domain([0, 6, 12]), min: '0%', max: '12%+',
+      fmt: function (v) { return pct(v); },
+      desc: 'Share of single-family homes whose owner is an LLC, corporation, partnership or large rental operator (appraisal-district records, {own}). Builders, banks, governments and family trusts are excluded, and so are company-held homes built in the last two years, which are mostly developers’ unsold inventory. Countywide: about 5%.' },
+    recent_company_pct: { label: 'Recent buyers that are companies', short: 'Recent buyers: companies',
+      scale: chroma.scale(['#f2f0f7', '#9e9ac8', '#3f007d']).domain([0, 15, 30]), min: '0%', max: '30%+',
+      fmt: function (v) { return pct(v); },
+      desc: 'Of existing single-family homes (built before the last two years) that changed owners since {since}, the share now owned by a company or rental operator (appraisal-district records).' },
+    institutional_pct: { label: 'Homes owned by large rental operators', short: 'Large rental operators',
+      scale: chroma.scale(['#f2f0f7', '#9e9ac8', '#3f007d']).domain([0, 2, 4]), min: '0%', max: '4%+',
+      fmt: function (v) { return pct(v); },
+      desc: 'Share of single-family homes owned by the big national single-family landlords (Invitation Homes, American Homes 4 Rent, Progress Residential, FirstKey, Tricon and others), matched by holding-company name or the operator’s own office address. Homes these firms manage for other owners are not counted. List in scripts/capital/owner_classes.py.' },
+    out_of_state_owner_pct: { label: 'Owners mailing from outside Texas', short: 'Out-of-state owners',
+      scale: chroma.scale(['#f2f0f7', '#9e9ac8', '#3f007d']).domain([0, 3, 6]), min: '0%', max: '6%+',
+      fmt: function (v) { return pct(v); },
+      desc: 'Share of single-family homes whose owner’s tax-mailing address is outside Texas (appraisal-district records, {own}).' },
   };
 
   function capitalMeta() {
@@ -401,12 +421,14 @@
       return names[parseInt(d.slice(5, 7), 10) - 1] + ' ' + d.slice(0, 4);
     }
     function back(n) { return latest ? (parseInt(latest.slice(0, 4), 10) - n) + latest.slice(4) : ''; }
+    var own = m.ownership || {};
     return { latest: mo(latest), d1: mo(back(1)), d3: mo(back(3)), d10: mo(back(10)),
+      own: own.label || (own.asof ? 'as of ' + own.asof : ''), since: own.recent_since || '',
       acs: 'Census ACS 2020–24', years: m.series_years || [] };
   }
   function fillDesc(t) {
     var m = capitalMeta();
-    return t.replace('{latest}', m.latest).replace('{d1}', m.d1).replace('{d3}', m.d3).replace('{d10}', m.d10).replace(/\{acs\}/g, m.acs);
+    return t.replace('{own}', m.own).replace('{since}', m.since).replace('{latest}', m.latest).replace('{d1}', m.d1).replace('{d3}', m.d3).replace('{d10}', m.d10).replace(/\{acs\}/g, m.acs);
   }
 
   function updateCapitalLegend() {
@@ -462,6 +484,15 @@
 
   function initCapitalSelector() {
     var select = document.getElementById('capital-indicator-select');
+    // Hide indicators with no data yet (e.g. ownership before the appraisal-district build has run)
+    var feats = (state.layerData.capital && state.layerData.capital.features) || [];
+    select.querySelectorAll('option').forEach(function (o) {
+      var has = feats.some(function (f) { return f.properties[o.value] != null; });
+      o.hidden = o.disabled = !has;
+    });
+    select.querySelectorAll('optgroup').forEach(function (g) {
+      g.hidden = !g.querySelector('option:not([disabled])');
+    });
     select.value = state.capitalIndicator;
     select.addEventListener('change', function () {
       state.capitalIndicator = select.value;
@@ -469,6 +500,70 @@
       else updateCapitalLegend();
     });
     if (state.layerData.capital) updateCapitalLegend();
+  }
+
+
+  // ── Lending (HMDA, by census tract) ────────────────────────
+  var LENDING_INDICATORS = {
+    investor_share: { label: 'Mortgages for investment properties', short: 'Investor loans',
+      scale: chroma.scale(['#f2f0f7', '#9e9ac8', '#3f007d']).domain([0, 15, 30]), min: '0%', max: '30%+',
+      desc: 'Share of home-purchase mortgages (1–4 unit homes) where the buyer said the home is an investment property. Undercounts investors, who often pay cash.' },
+    denial_rate: { label: 'Mortgage denial rate', short: 'Denial rate',
+      scale: chroma.scale(['#ffffcc', '#fd8d3c', '#800026']).domain([5, 15, 30]), min: '5%', max: '30%+',
+      desc: 'Share of owner-occupant home-purchase applications that lenders denied.' },
+    hispanic_share: { label: 'Loans to Hispanic or Latino buyers', short: 'Hispanic buyers',
+      scale: chroma.scale(['#f7fbff', '#6baed6', '#08306b']).domain([0, 50, 100]), min: '0%', max: '100%',
+      desc: 'Share of owner-occupant home-purchase mortgages that went to Hispanic or Latino borrowers.' },
+    black_share: { label: 'Loans to Black buyers', short: 'Black buyers',
+      scale: chroma.scale(['#f7fbff', '#6baed6', '#08306b']).domain([0, 50, 100]), min: '0%', max: '100%',
+      desc: 'Share of owner-occupant home-purchase mortgages that went to Black borrowers.' },
+  };
+
+  function lendingYears() {
+    var y = ((state.layerData.lending || {}).metadata || {}).years || [];
+    return y.length ? (y.length > 1 ? y[0] + '–' + y[y.length - 1] : y[0]) : '';
+  }
+
+  function updateLendingLegend() {
+    var def = LENDING_INDICATORS[state.lendingIndicator];
+    var dom = def.scale.domain(), stops = [];
+    for (var i = 0; i <= 8; i++) stops.push(def.scale(dom[0] + (dom[dom.length - 1] - dom[0]) * i / 8).hex());
+    document.getElementById('lending-gradient').style.background = 'linear-gradient(to right, ' + stops.join(', ') + ')';
+    document.getElementById('lending-range-min').textContent = def.min;
+    document.getElementById('lending-range-max').textContent = def.max;
+    document.getElementById('lending-indicator-desc').textContent = def.desc + ' HMDA ' + lendingYears() + '.';
+  }
+
+  function buildLendingLayer() {
+    var group = state.layerGroups.lending;
+    group.clearLayers();
+    var data = state.layerData.lending;
+    if (!data) return;
+    var key = state.lendingIndicator, def = LENDING_INDICATORS[key];
+    updateLendingLegend();
+    L.geoJSON(data, {
+      style: function (f) {
+        var v = f.properties[key];
+        return { fillColor: v != null ? def.scale(v).hex() : NO_DATA, fillOpacity: 0.7, color: 'rgba(255,255,255,0.12)', weight: 0.6 };
+      },
+      onEachFeature: function (f, layer) {
+        onClick(layer, function () { showInfoPanel(f, 'lending'); });
+        layer.bindTooltip(function () {
+          return '<strong>' + esc(f.properties.name) + '</strong><br>' + def.short + ': ' + pct(f.properties[key]) +
+            ' <span class="moe">(' + (f.properties.purchase_loans || 0) + ' loans)</span>';
+        }, { sticky: true, className: 'dark-tooltip' });
+      },
+    }).addTo(group);
+  }
+
+  function initLendingSelector() {
+    var select = document.getElementById('lending-indicator-select');
+    select.value = state.lendingIndicator;
+    select.addEventListener('change', function () {
+      state.lendingIndicator = select.value;
+      if (state.activeLayers.has('lending')) buildLendingLayer(); else updateLendingLegend();
+    });
+    if (state.layerData.lending) updateLendingLegend();
   }
 
   // ── Info panel ─────────────────────────────────────────────
@@ -552,10 +647,26 @@
           row('Median household income', p.median_income != null ? money(p.median_income) + (p.median_income_moe != null ? ' <span class="moe">± ' + money(p.median_income_moe) + '</span>' : '') : 'No data') +
           r('price_to_income') + r('rent_burdened_pct') + r('renter_pct') +
           row('Population', p.population != null ? p.population.toLocaleString() : '—')) +
+        (p.homes != null ? section('Single-family owners (appraisal district, ' + esc(m.own.replace('as of ', '')) + ')',
+          row('Single-family homes', p.homes.toLocaleString()) + r('company_owned_pct') + r('institutional_pct') +
+          (p.new_build_company ? row('New homes held by companies (excluded)', p.new_build_company.toLocaleString()) : '') +
+          r('out_of_state_owner_pct') + (p.recent_sales != null ? row('Owner changes since ' + esc(m.since), p.recent_sales.toLocaleString()) + r('recent_company_pct') : '')) : '') +
         section('', note((p.acs_note ? esc(p.acs_note) + '. ' : '') +
           'Zillow figures are typical values for the ZIP in nominal dollars; asking rents reflect new leases, not what current tenants pay. ' +
           'Census figures cover the ZIP Code Tabulation Area. Sources: ' + link('https://www.zillow.com/research/data/', 'Zillow Research') +
           ', ' + link('https://censusreporter.org/tables/B25070/', 'Census ACS via Census Reporter') + '.'));
+    },
+    lending: function (p) {
+      var bench = ((state.layerData.lending || {}).metadata || {}).county_benchmark || {};
+      function r(k) {
+        return row(LENDING_INDICATORS[k].short, pct(p[k]) + (bench[k] != null ? ' <span class="moe">county ' + pct(bench[k]) + '</span>' : ''),
+          k === state.lendingIndicator ? 'color:var(--accent);font-weight:600;' : '');
+      }
+      return '<h3>' + esc(p.name) + '</h3>' +
+        section('Home-purchase mortgages (HMDA ' + lendingYears() + ')',
+          row('Loans originated', (p.purchase_loans || 0).toLocaleString()) + r('investor_share') + r('denial_rate') + r('hispanic_share') + r('black_share')) +
+        section('', note('Home Mortgage Disclosure Act data, 1–4 unit homes. Shares are withheld where there are fewer than 20 loans or applications. ' +
+          'Cash purchases are not included, so investor buying is undercounted. Source: ' + link('https://ffiec.cfpb.gov/data-browser/', 'CFPB HMDA Data Browser') + '.'));
     },
     political: function (p) {
       var c = partyColors[p.party] || partyColors.Unknown;
@@ -750,6 +861,7 @@
       initNarrative();
       initPoliticalSelector();
       initCapitalSelector();
+      initLendingSelector();
       initUI();
       var red = document.getElementById('layer-redlining');
       red.checked = true;
