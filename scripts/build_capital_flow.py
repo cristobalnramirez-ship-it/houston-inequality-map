@@ -123,7 +123,7 @@ def main():
             'value_series': [round(v[d]) if v.get(d) else None for d in [back(k) for k in range(10, -1, -1)]],
             'rent_series': [round(r[d]) if r.get(d) else None for d in [back(k) for k in range(10, -1, -1)]],
         }
-        for k in ('homes', 'company_owned_pct', 'institutional_pct', 'out_of_state_owner_pct',
+        for k in ('homes', 'new_build_company', 'company_owned_pct', 'institutional_pct', 'out_of_state_owner_pct',
                   'absentee_pct', 'recent_sales', 'recent_company_pct'):
             if z in own:
                 p[k] = own[z].get(k)

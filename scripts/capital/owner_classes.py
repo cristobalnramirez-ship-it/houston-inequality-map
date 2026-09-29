@@ -104,6 +104,48 @@ def operator(name):
     return next((label for label, rx in _operators if rx.search(n)), None)
 
 
+# Operators' own corporate offices, confirmed from SEC filings and company pages (see METHODOLOGY.md).
+# A company-owned home whose tax bill goes to one of these is attributed to that operator even when
+# the holding entity's name doesn't say so (e.g. SRP SUB LLC, a Starwood Waypoint subsidiary now
+# owned by Invitation Homes). Keys are addresses after build_ownership.norm_addr(), plus state.
+OPERATOR_ADDRESSES = [
+    ('1717 MAIN STE 2000', 'TX', 'Invitation Homes'),                 # Invitation Homes HQ, Dallas
+    ('8665 E HARTFORD', 'AZ', 'Invitation Homes'),                    # former Colony Starwood HQ, Scottsdale
+    ('8655 E HARTFORD', 'AZ', 'Invitation Homes'),                    # same, as written in CSH loan documents
+    ('23975 PARK SORRENTO', 'CA', 'American Homes 4 Rent (AMH)'),     # AMH HQ, Calabasas
+    ('1850 STE 900', 'GA', 'Cerberus (FirstKey Homes)'),              # 1850 Parkway Pl, Marietta
+    ('600 GALLERIA SE STE 300', 'GA', 'Cerberus (FirstKey Homes)'),   # 600 Galleria Pkwy SE, Atlanta
+    ('1508 BROOKHOLLOW', 'CA', 'Tricon'),                             # Tricon, Santa Ana
+    ('15771 RED HILL', 'CA', 'Tricon'),                               # Tricon HQ, Tustin (includes JVs Tricon manages)
+    ('120 S RIVERSIDE PLAZA STE 2000', 'IL', 'Blackstone (Home Partners)'),
+    ('5001 PLAZA ON THE LAKE', 'TX', 'Amherst (Main Street Renewal)'),
+    ('3903 S CONGRESS STE 40298', 'TX', 'Amherst (Main Street Renewal)'),
+]
+
+# Addresses of a property manager that also manages homes for owners it does not own.
+# Homes there that no name rule matches are counted separately, not credited to the manager.
+MANAGER_ADDRESSES = [
+    ('PO BOX 31236', 'UT', 'Progress Residential'),
+    ('PO BOX 4090', 'AZ', 'Progress Residential'),
+]
+# Owners confirmed to be independent of the manager whose address they share.
+INDEPENDENT_OWNERS = re.compile(r'\bYAMASA\b')
+
+
+def operator_by_address(norm_mail_addr, mail_state, name):
+    """Return (operator, how) for a company-owned home, using the owner's tax-bill address."""
+    a, st = norm_mail_addr or '', (mail_state or '').upper()
+    if INDEPENDENT_OWNERS.search(normalize(name)):
+        return None, None
+    for prefix, state, label in OPERATOR_ADDRESSES:
+        if st == state and a.startswith(prefix):
+            return label, 'office'
+    for prefix, state, label in MANAGER_ADDRESSES:
+        if st == state and a.startswith(prefix):
+            return label, 'managed'
+    return None, None
+
+
 if __name__ == '__main__':
     tests = {
         'INVITATION HOMES REALTY LLC': 'institutional', 'IH6 PROPERTY TEXAS LP': 'institutional',

@@ -13,7 +13,7 @@
   var DECADE_MIN = 1930;
   var DECADE_MAX = 2020;
   var LOAD_TRI = false;
-  var LOAD_LENDING = false; // set true once scripts/capital/build_hmda_tracts.py has produced data/capital/hmda_tracts.geojson
+  var LOAD_LENDING = true;  // data/capital/hmda_tracts.geojson, built by scripts/capital/build_hmda_tracts.py
 
   // ── State ──────────────────────────────────────────────────
   var state = {
@@ -395,19 +395,19 @@
       fmt: function (v) { return pct(v); },
       desc: 'Share of occupied homes that are rented ({acs}).' },
     company_owned_pct: { label: 'Homes owned by companies', short: 'Company-owned',
+      scale: chroma.scale(['#f2f0f7', '#9e9ac8', '#3f007d']).domain([0, 6, 12]), min: '0%', max: '12%+',
+      fmt: function (v) { return pct(v); },
+      desc: 'Share of single-family homes whose owner is an LLC, corporation, partnership or large rental operator (appraisal-district records, {own}). Builders, banks, governments and family trusts are excluded, and so are company-held homes built in the last two years, which are mostly developers’ unsold inventory. Countywide: about 5%.' },
+    recent_company_pct: { label: 'Recent buyers that are companies', short: 'Recent buyers: companies',
       scale: chroma.scale(['#f2f0f7', '#9e9ac8', '#3f007d']).domain([0, 15, 30]), min: '0%', max: '30%+',
       fmt: function (v) { return pct(v); },
-      desc: 'Share of single-family homes whose owner is an LLC, corporation, partnership or large rental operator (appraisal-district records, {own}). Builders, banks, governments and family trusts are excluded.' },
-    recent_company_pct: { label: 'Recent buyers that are companies', short: 'Recent buyers: companies',
-      scale: chroma.scale(['#f2f0f7', '#9e9ac8', '#3f007d']).domain([0, 20, 40]), min: '0%', max: '40%+',
-      fmt: function (v) { return pct(v); },
-      desc: 'Of single-family homes that changed owners since {since}, the share now owned by a company or rental operator (appraisal-district records).' },
+      desc: 'Of existing single-family homes (built before the last two years) that changed owners since {since}, the share now owned by a company or rental operator (appraisal-district records).' },
     institutional_pct: { label: 'Homes owned by large rental operators', short: 'Large rental operators',
-      scale: chroma.scale(['#f2f0f7', '#9e9ac8', '#3f007d']).domain([0, 3, 6]), min: '0%', max: '6%+',
+      scale: chroma.scale(['#f2f0f7', '#9e9ac8', '#3f007d']).domain([0, 2, 4]), min: '0%', max: '4%+',
       fmt: function (v) { return pct(v); },
-      desc: 'Share of single-family homes owned by the big national single-family landlords (Invitation Homes, American Homes 4 Rent, Progress Residential, FirstKey, Tricon and others; list in scripts/capital/owner_classes.py).' },
+      desc: 'Share of single-family homes owned by the big national single-family landlords (Invitation Homes, American Homes 4 Rent, Progress Residential, FirstKey, Tricon and others), matched by holding-company name or the operator’s own office address. Homes these firms manage for other owners are not counted. List in scripts/capital/owner_classes.py.' },
     out_of_state_owner_pct: { label: 'Owners mailing from outside Texas', short: 'Out-of-state owners',
-      scale: chroma.scale(['#f2f0f7', '#9e9ac8', '#3f007d']).domain([0, 5, 10]), min: '0%', max: '10%+',
+      scale: chroma.scale(['#f2f0f7', '#9e9ac8', '#3f007d']).domain([0, 3, 6]), min: '0%', max: '6%+',
       fmt: function (v) { return pct(v); },
       desc: 'Share of single-family homes whose owner’s tax-mailing address is outside Texas (appraisal-district records, {own}).' },
   };
@@ -423,7 +423,7 @@
     function back(n) { return latest ? (parseInt(latest.slice(0, 4), 10) - n) + latest.slice(4) : ''; }
     var own = m.ownership || {};
     return { latest: mo(latest), d1: mo(back(1)), d3: mo(back(3)), d10: mo(back(10)),
-      own: own.asof ? 'as of ' + own.asof : '', since: own.recent_since || '',
+      own: own.label || (own.asof ? 'as of ' + own.asof : ''), since: own.recent_since || '',
       acs: 'Census ACS 2020–24', years: m.series_years || [] };
   }
   function fillDesc(t) {
@@ -649,6 +649,7 @@
           row('Population', p.population != null ? p.population.toLocaleString() : '—')) +
         (p.homes != null ? section('Single-family owners (appraisal district, ' + esc(m.own.replace('as of ', '')) + ')',
           row('Single-family homes', p.homes.toLocaleString()) + r('company_owned_pct') + r('institutional_pct') +
+          (p.new_build_company ? row('New homes held by companies (excluded)', p.new_build_company.toLocaleString()) : '') +
           r('out_of_state_owner_pct') + (p.recent_sales != null ? row('Owner changes since ' + esc(m.since), p.recent_sales.toLocaleString()) + r('recent_company_pct') : '')) : '') +
         section('', note((p.acs_note ? esc(p.acs_note) + '. ' : '') +
           'Zillow figures are typical values for the ZIP in nominal dollars; asking rents reflect new leases, not what current tenants pay. ' +

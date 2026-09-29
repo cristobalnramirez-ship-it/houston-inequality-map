@@ -13,13 +13,17 @@ Usage
 
 Measures per ZIP, over single-family homes (Texas state property class A1):
   homes                    single-family parcels
-  company_owned_pct        % owned by a company or a large rental operator (see owner_classes.py)
-  institutional_pct        % owned by large single-family-rental operators (Invitation Homes, AMH, Progress ...)
+  company_owned_pct        % owned by a company or a large rental operator (see owner_classes.py),
+                           not counting company-held homes built in the last two years (developer inventory)
+  institutional_pct        % owned by large single-family-rental operators (Invitation Homes, AMH, Progress ...),
+                           matched by holding-entity name or by the operator's own office address
+  new_build_company        company-held homes built in the last two years (excluded above)
   out_of_state_owner_pct   % whose owner's mailing address is outside Texas
   absentee_pct             % whose owner's mailing address is not the property itself
   recent_sales             homes with an ownership change in the last 36 months (from the appraisal record's
                            new-owner date, when the source has one)
   recent_company_pct       % of those recent changes where the new owner is a company or rental operator
+                           (existing homes only: homes built in the last two years are left out of both)
 
 Shares are withheld for ZIPs with fewer than 50 homes (or 20 recent sales).
 """
@@ -36,7 +40,7 @@ from collections import Counter, defaultdict
 from datetime import date, datetime
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from owner_classes import classify, operator, normalize, INVESTOR_TYPES  # noqa: E402
+from owner_classes import classify, operator, operator_by_address, normalize, INVESTOR_TYPES  # noqa: E402
 
 MIN_HOMES, MIN_SALES = 50, 20
 csv.field_size_limit(10 ** 8)
@@ -88,6 +92,7 @@ def rows_hcad(path):
                 'mail_addr': row.get('mail_addr_1'),
                 'site_addr': row.get('site_addr_1'),
                 'new_owner_date': parse_date(row.get('new_own_dt')),
+                'yr_built': int(y) if (y := (row.get('yr_impr') or '').strip()).isdigit() else None,
             }
 
 
@@ -130,6 +135,7 @@ def rows_cameron(path, inspect=False):
             'mail_addr': d.get(pick['mail_addr']) if pick['mail_addr'] else None,
             'site_addr': d.get(pick['site_addr']) if pick['site_addr'] else None,
             'new_owner_date': parse_date(str(d.get(pick['new_owner_date']))) if pick['new_owner_date'] else None,
+            'yr_built': None,
         }
 
 
@@ -139,6 +145,7 @@ def main():
     ap.add_argument('--input', required=True)
     ap.add_argument('--out', required=True)
     ap.add_argument('--asof', default=date.today().isoformat(), help='reference date for "recent" (YYYY-MM-DD)')
+    ap.add_argument('--label', help='how the map names this data, e.g. "HCAD 2026 certified roll"')
     ap.add_argument('--inspect', action='store_true')
     ap.add_argument('--report', help='also write a CSV of the largest company owners and shared mailing addresses (for checking the rules)')
     args = ap.parse_args()
@@ -148,30 +155,46 @@ def main():
     rows = rows_hcad(args.input) if args.source == 'hcad' else rows_cameron(args.input, args.inspect)
     z = defaultdict(Counter)
     types_all = Counter()
-    ops = Counter()
+    ops = Counter()          # homes by operator: matched by owner name
+    ops_addr = Counter()     # added by the operator's own office address
+    managed = Counter()      # company-owned homes billed to a manager's address, owner not identified
     top_names, top_mail = Counter(), Counter()
     has_dates = False
+    new_build_company_all = 0
     for row in rows:
         if not row['zip'] or not row['cls'].startswith('A1'):
             continue
         t = classify(row['owner'])
-        types_all[t] += 1
         op = operator(row['owner'])
         if op:
             ops[op] += 1
+        elif t == 'company':
+            op, how = operator_by_address(norm_addr(row['mail_addr']), row['mail_state'], row['owner'])
+            if how == 'office':
+                ops_addr[op] += 1
+                t = 'institutional'
+            elif how == 'managed':
+                managed[op] += 1
+        types_all[t] += 1
         if t in INVESTOR_TYPES or t == 'unknown':
             top_names[(normalize(row['owner']), t, op or '')] += 1
             top_mail[(norm_addr(row['mail_addr']), row['mail_state'])] += 1
         c = z[row['zip']]
         c['homes'] += 1
         c['t_' + t] += 1
-        if t in INVESTOR_TYPES:
+        # Homes built in the last two years and held by a company are mostly small developers' unsold
+        # inventory (townhome LLCs), not landlords: count them separately.
+        new_build = bool(row.get('yr_built') and row['yr_built'] >= asof.year - 2)
+        if new_build and t == 'company':
+            c['new_build_company'] += 1
+            new_build_company_all += 1
+        elif t in INVESTOR_TYPES:
             c['investor'] += 1
         if row['mail_state'] and row['mail_state'] not in ('TX', 'TEXAS'):
             c['out_of_state'] += 1
         if row['mail_addr'] and row['site_addr'] and norm_addr(row['mail_addr']) != norm_addr(row['site_addr']):
             c['absentee'] += 1
-        if row['new_owner_date']:
+        if row['new_owner_date'] and not new_build:
             has_dates = True
             if row['new_owner_date'] >= cutoff:
                 c['recent'] += 1
@@ -185,6 +208,7 @@ def main():
     for zp, c in z.items():
         out[zp] = {
             'homes': c['homes'],
+            'new_build_company': c['new_build_company'],
             'company_owned_pct': share(c['investor'], c['homes'], MIN_HOMES),
             'institutional_pct': share(c['t_institutional'], c['homes'], MIN_HOMES),
             'out_of_state_owner_pct': share(c['out_of_state'], c['homes'], MIN_HOMES),
@@ -192,13 +216,20 @@ def main():
             'recent_sales': c['recent'] if has_dates else None,
             'recent_company_pct': share(c['recent_investor'], c['recent'], MIN_SALES) if has_dates else None,
         }
-    meta = {'source': args.source, 'asof': args.asof, 'recent_since': cutoff.isoformat(),
-            'owner_type_counts': dict(types_all), 'operator_counts': dict(ops.most_common()),
+    meta = {'source': args.source, 'asof': args.asof, 'label': args.label, 'recent_since': cutoff.isoformat(),
+            'owner_type_counts': dict(types_all), 'operator_counts_by_name': dict(ops.most_common()),
+            'operator_counts_added_by_office_address': dict(ops_addr.most_common()),
+            'operator_counts_total': dict((ops + ops_addr).most_common()),
+            'managed_for_unidentified_owners': dict(managed),
+            'new_build_company_excluded': new_build_company_all, 'new_build_since': asof.year - 2,
             'min_homes': MIN_HOMES, 'min_recent_sales': MIN_SALES}
     with open(args.out, 'w', encoding='utf-8') as f:
         json.dump({'metadata': meta, 'zips': out}, f, indent=1)
     print(f"{len(out)} ZIPs, {sum(types_all.values())} single-family homes; owner types: {dict(types_all)}")
-    print('Large operators:', dict(ops.most_common()))
+    print('Large operators (by name):', dict(ops.most_common()))
+    print('Added by office address:', dict(ops_addr.most_common()))
+    print('Total:', dict((ops + ops_addr).most_common()))
+    print('Managed for unidentified owners:', dict(managed))
     if args.report:
         with open(args.report, 'w', newline='', encoding='utf-8') as f:
             w = csv.writer(f)
