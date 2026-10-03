@@ -1,0 +1,1510 @@
+{
+ "metadata": {
+  "source": "hcad",
+  "asof": "2026-09-29",
+  "label": "HCAD 2026 certified roll",
+  "recent_since": "2023-09-28",
+  "owner_type_counts": {
+   "individual": 1071047,
+   "company": 54158,
+   "trust": 17072,
+   "public": 412,
+   "lender": 519,
+   "institutional": 8553,
+   "builder": 5678
+  },
+  "operator_counts_by_name": {
+   "Cerberus (FirstKey Homes)": 1760,
+   "Pretium (Progress Residential)": 1627,
+   "American Homes 4 Rent (AMH)": 1210,
+   "Tricon": 821,
+   "Invitation Homes": 428,
+   "ResiCap": 167,
+   "iBuyer: Opendoor": 159,
+   "Blackstone (Home Partners)": 106,
+   "Amherst (Main Street Renewal)": 31,
+   "iBuyer: Offerpad": 15,
+   "Pathlight": 6
+  },
+  "operator_counts_added_by_office_address": {
+   "Invitation Homes": 1239,
+   "Tricon": 670,
+   "Amherst (Main Street Renewal)": 301,
+   "Cerberus (FirstKey Homes)": 120,
+   "Blackstone (Home Partners)": 55,
+   "American Homes 4 Rent (AMH)": 12
+  },
+  "operator_counts_total": {
+   "Cerberus (FirstKey Homes)": 1880,
+   "Invitation Homes": 1667,
+   "Pretium (Progress Residential)": 1627,
+   "Tricon": 1491,
+   "American Homes 4 Rent (AMH)": 1222,
+   "Amherst (Main Street Renewal)": 332,
+   "ResiCap": 167,
+   "Blackstone (Home Partners)": 161,
+   "iBuyer: Opendoor": 159,
+   "iBuyer: Offerpad": 15,
+   "Pathlight": 6
+  },
+  "managed_for_unidentified_owners": {
+   "Progress Residential": 1189
+  },
+  "new_build_company_excluded": 4815,
+  "new_build_since": 2024,
+  "min_homes": 50,
+  "min_recent_sales": 20
+ },
+ "zips": {
+  "77003": {
+   "homes": 3450,
+   "new_build_company": 46,
+   "company_owned_pct": 4.6,
+   "institutional_pct": 0.1,
+   "out_of_state_owner_pct": 3.0,
+   "absentee_pct": 36.0,
+   "recent_sales": 484,
+   "recent_company_pct": 10.7
+  },
+  "77002": {
+   "homes": 92,
+   "new_build_company": 0,
+   "company_owned_pct": 7.6,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 2.2,
+   "absentee_pct": 35.9,
+   "recent_sales": 16,
+   "recent_company_pct": null
+  },
+  "77004": {
+   "homes": 7013,
+   "new_build_company": 130,
+   "company_owned_pct": 10.2,
+   "institutional_pct": 0.4,
+   "out_of_state_owner_pct": 3.8,
+   "absentee_pct": 42.8,
+   "recent_sales": 1115,
+   "recent_company_pct": 22.1
+  },
+  "77034": {
+   "homes": 7107,
+   "new_build_company": 0,
+   "company_owned_pct": 3.4,
+   "institutional_pct": 0.4,
+   "out_of_state_owner_pct": 1.4,
+   "absentee_pct": 18.3,
+   "recent_sales": 718,
+   "recent_company_pct": 10.7
+  },
+  "77009": {
+   "homes": 11638,
+   "new_build_company": 123,
+   "company_owned_pct": 7.4,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 2.3,
+   "absentee_pct": 30.8,
+   "recent_sales": 1798,
+   "recent_company_pct": 15.4
+  },
+  "77022": {
+   "homes": 6862,
+   "new_build_company": 85,
+   "company_owned_pct": 6.7,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.6,
+   "absentee_pct": 35.8,
+   "recent_sales": 847,
+   "recent_company_pct": 19.0
+  },
+  "77026": {
+   "homes": 6302,
+   "new_build_company": 57,
+   "company_owned_pct": 8.5,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.4,
+   "absentee_pct": 41.6,
+   "recent_sales": 795,
+   "recent_company_pct": 25.2
+  },
+  "77020": {
+   "homes": 7120,
+   "new_build_company": 61,
+   "company_owned_pct": 6.0,
+   "institutional_pct": 0.1,
+   "out_of_state_owner_pct": 1.5,
+   "absentee_pct": 37.3,
+   "recent_sales": 887,
+   "recent_company_pct": 18.2
+  },
+  "77006": {
+   "homes": 4843,
+   "new_build_company": 22,
+   "company_owned_pct": 5.0,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 2.5,
+   "absentee_pct": 31.9,
+   "recent_sales": 847,
+   "recent_company_pct": 8.4
+  },
+  "77039": {
+   "homes": 5265,
+   "new_build_company": 2,
+   "company_owned_pct": 5.3,
+   "institutional_pct": 0.1,
+   "out_of_state_owner_pct": 1.2,
+   "absentee_pct": 28.6,
+   "recent_sales": 519,
+   "recent_company_pct": 20.0
+  },
+  "77060": {
+   "homes": 3583,
+   "new_build_company": 3,
+   "company_owned_pct": 3.7,
+   "institutional_pct": 0.3,
+   "out_of_state_owner_pct": 1.3,
+   "absentee_pct": 21.2,
+   "recent_sales": 314,
+   "recent_company_pct": 8.3
+  },
+  "77032": {
+   "homes": 1667,
+   "new_build_company": 15,
+   "company_owned_pct": 9.2,
+   "institutional_pct": 0.3,
+   "out_of_state_owner_pct": 3.5,
+   "absentee_pct": 34.1,
+   "recent_sales": 152,
+   "recent_company_pct": 19.7
+  },
+  "77037": {
+   "homes": 3566,
+   "new_build_company": 0,
+   "company_owned_pct": 2.8,
+   "institutional_pct": 0.1,
+   "out_of_state_owner_pct": 0.8,
+   "absentee_pct": 25.4,
+   "recent_sales": 286,
+   "recent_company_pct": 11.9
+  },
+  "77047": {
+   "homes": 10619,
+   "new_build_company": 115,
+   "company_owned_pct": 8.7,
+   "institutional_pct": 1.1,
+   "out_of_state_owner_pct": 3.5,
+   "absentee_pct": 27.1,
+   "recent_sales": 1226,
+   "recent_company_pct": 16.6
+  },
+  "77011": {
+   "homes": 3725,
+   "new_build_company": 30,
+   "company_owned_pct": 5.6,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.1,
+   "absentee_pct": 37.3,
+   "recent_sales": 413,
+   "recent_company_pct": 20.8
+  },
+  "77019": {
+   "homes": 5321,
+   "new_build_company": 19,
+   "company_owned_pct": 4.2,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.4,
+   "absentee_pct": 24.7,
+   "recent_sales": 897,
+   "recent_company_pct": 8.6
+  },
+  "77007": {
+   "homes": 13823,
+   "new_build_company": 80,
+   "company_owned_pct": 4.4,
+   "institutional_pct": 0.1,
+   "out_of_state_owner_pct": 2.6,
+   "absentee_pct": 37.2,
+   "recent_sales": 2482,
+   "recent_company_pct": 9.2
+  },
+  "77008": {
+   "homes": 14006,
+   "new_build_company": 87,
+   "company_owned_pct": 5.6,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 3.2,
+   "absentee_pct": 31.8,
+   "recent_sales": 2681,
+   "recent_company_pct": 8.7
+  },
+  "77094": {
+   "homes": 3075,
+   "new_build_company": 0,
+   "company_owned_pct": 1.2,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.0,
+   "absentee_pct": 11.4,
+   "recent_sales": 390,
+   "recent_company_pct": 3.8
+  },
+  "77571": {
+   "homes": 12412,
+   "new_build_company": 20,
+   "company_owned_pct": 3.8,
+   "institutional_pct": 0.6,
+   "out_of_state_owner_pct": 1.7,
+   "absentee_pct": 19.9,
+   "recent_sales": 1805,
+   "recent_company_pct": 6.9
+  },
+  "77401": {
+   "homes": 6146,
+   "new_build_company": 15,
+   "company_owned_pct": 2.2,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 0.8,
+   "absentee_pct": 13.7,
+   "recent_sales": 816,
+   "recent_company_pct": 7.1
+  },
+  "77338": {
+   "homes": 10832,
+   "new_build_company": 35,
+   "company_owned_pct": 7.8,
+   "institutional_pct": 3.1,
+   "out_of_state_owner_pct": 5.8,
+   "absentee_pct": 25.5,
+   "recent_sales": 1371,
+   "recent_company_pct": 13.8
+  },
+  "77023": {
+   "homes": 5784,
+   "new_build_company": 22,
+   "company_owned_pct": 4.3,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.0,
+   "absentee_pct": 24.6,
+   "recent_sales": 612,
+   "recent_company_pct": 14.4
+  },
+  "77520": {
+   "homes": 9191,
+   "new_build_company": 11,
+   "company_owned_pct": 6.4,
+   "institutional_pct": 0.1,
+   "out_of_state_owner_pct": 1.5,
+   "absentee_pct": 30.6,
+   "recent_sales": 1199,
+   "recent_company_pct": 16.3
+  },
+  "77028": {
+   "homes": 6340,
+   "new_build_company": 29,
+   "company_owned_pct": 5.3,
+   "institutional_pct": 0.1,
+   "out_of_state_owner_pct": 1.4,
+   "absentee_pct": 32.9,
+   "recent_sales": 787,
+   "recent_company_pct": 17.5
+  },
+  "77532": {
+   "homes": 12302,
+   "new_build_company": 90,
+   "company_owned_pct": 3.8,
+   "institutional_pct": 1.0,
+   "out_of_state_owner_pct": 3.2,
+   "absentee_pct": 20.9,
+   "recent_sales": 1955,
+   "recent_company_pct": 8.2
+  },
+  "77038": {
+   "homes": 5728,
+   "new_build_company": 3,
+   "company_owned_pct": 4.6,
+   "institutional_pct": 0.8,
+   "out_of_state_owner_pct": 3.1,
+   "absentee_pct": 20.5,
+   "recent_sales": 538,
+   "recent_company_pct": 20.6
+  },
+  "77021": {
+   "homes": 7629,
+   "new_build_company": 218,
+   "company_owned_pct": 10.3,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 2.4,
+   "absentee_pct": 40.8,
+   "recent_sales": 1185,
+   "recent_company_pct": 25.7
+  },
+  "77098": {
+   "homes": 2404,
+   "new_build_company": 3,
+   "company_owned_pct": 4.7,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.2,
+   "absentee_pct": 29.0,
+   "recent_sales": 416,
+   "recent_company_pct": 9.6
+  },
+  "77077": {
+   "homes": 11386,
+   "new_build_company": 15,
+   "company_owned_pct": 3.0,
+   "institutional_pct": 0.1,
+   "out_of_state_owner_pct": 1.6,
+   "absentee_pct": 22.4,
+   "recent_sales": 1879,
+   "recent_company_pct": 7.2
+  },
+  "77076": {
+   "homes": 6365,
+   "new_build_company": 56,
+   "company_owned_pct": 4.1,
+   "institutional_pct": 0.3,
+   "out_of_state_owner_pct": 1.5,
+   "absentee_pct": 27.5,
+   "recent_sales": 605,
+   "recent_company_pct": 12.6
+  },
+  "77093": {
+   "homes": 9524,
+   "new_build_company": 25,
+   "company_owned_pct": 2.8,
+   "institutional_pct": 0.1,
+   "out_of_state_owner_pct": 1.1,
+   "absentee_pct": 30.5,
+   "recent_sales": 848,
+   "recent_company_pct": 13.2
+  },
+  "77429": {
+   "homes": 28272,
+   "new_build_company": 312,
+   "company_owned_pct": 4.1,
+   "institutional_pct": 0.9,
+   "out_of_state_owner_pct": 3.3,
+   "absentee_pct": 16.7,
+   "recent_sales": 3918,
+   "recent_company_pct": 8.8
+  },
+  "77072": {
+   "homes": 10981,
+   "new_build_company": 8,
+   "company_owned_pct": 5.1,
+   "institutional_pct": 0.2,
+   "out_of_state_owner_pct": 2.5,
+   "absentee_pct": 31.9,
+   "recent_sales": 1421,
+   "recent_company_pct": 11.6
+  },
+  "77536": {
+   "homes": 10051,
+   "new_build_company": 11,
+   "company_owned_pct": 2.9,
+   "institutional_pct": 0.3,
+   "out_of_state_owner_pct": 1.1,
+   "absentee_pct": 16.7,
+   "recent_sales": 1316,
+   "recent_company_pct": 5.3
+  },
+  "77012": {
+   "homes": 3327,
+   "new_build_company": 7,
+   "company_owned_pct": 4.0,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 0.7,
+   "absentee_pct": 32.3,
+   "recent_sales": 284,
+   "recent_company_pct": 16.2
+  },
+  "77050": {
+   "homes": 932,
+   "new_build_company": 0,
+   "company_owned_pct": 4.9,
+   "institutional_pct": 0.3,
+   "out_of_state_owner_pct": 1.8,
+   "absentee_pct": 26.6,
+   "recent_sales": 92,
+   "recent_company_pct": 18.5
+  },
+  "77075": {
+   "homes": 8897,
+   "new_build_company": 16,
+   "company_owned_pct": 3.8,
+   "institutional_pct": 0.5,
+   "out_of_state_owner_pct": 1.5,
+   "absentee_pct": 17.8,
+   "recent_sales": 871,
+   "recent_company_pct": 9.3
+  },
+  "77040": {
+   "homes": 11058,
+   "new_build_company": 2,
+   "company_owned_pct": 2.9,
+   "institutional_pct": 0.4,
+   "out_of_state_owner_pct": 1.5,
+   "absentee_pct": 16.9,
+   "recent_sales": 1258,
+   "recent_company_pct": 9.4
+  },
+  "77029": {
+   "homes": 5307,
+   "new_build_company": 8,
+   "company_owned_pct": 5.2,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.1,
+   "absentee_pct": 30.6,
+   "recent_sales": 626,
+   "recent_company_pct": 18.7
+  },
+  "77053": {
+   "homes": 3676,
+   "new_build_company": 6,
+   "company_owned_pct": 7.7,
+   "institutional_pct": 0.5,
+   "out_of_state_owner_pct": 2.4,
+   "absentee_pct": 27.6,
+   "recent_sales": 321,
+   "recent_company_pct": 10.3
+  },
+  "77045": {
+   "homes": 9256,
+   "new_build_company": 25,
+   "company_owned_pct": 6.6,
+   "institutional_pct": 1.4,
+   "out_of_state_owner_pct": 3.8,
+   "absentee_pct": 26.2,
+   "recent_sales": 946,
+   "recent_company_pct": 19.2
+  },
+  "77018": {
+   "homes": 11179,
+   "new_build_company": 182,
+   "company_owned_pct": 6.1,
+   "institutional_pct": 0.2,
+   "out_of_state_owner_pct": 1.9,
+   "absentee_pct": 26.4,
+   "recent_sales": 2044,
+   "recent_company_pct": 15.7
+  },
+  "77088": {
+   "homes": 14600,
+   "new_build_company": 120,
+   "company_owned_pct": 6.6,
+   "institutional_pct": 0.5,
+   "out_of_state_owner_pct": 2.8,
+   "absentee_pct": 26.5,
+   "recent_sales": 1609,
+   "recent_company_pct": 15.2
+  },
+  "77091": {
+   "homes": 7434,
+   "new_build_company": 369,
+   "company_owned_pct": 8.3,
+   "institutional_pct": 0.3,
+   "out_of_state_owner_pct": 2.5,
+   "absentee_pct": 35.4,
+   "recent_sales": 1202,
+   "recent_company_pct": 21.5
+  },
+  "77447": {
+   "homes": 10983,
+   "new_build_company": 156,
+   "company_owned_pct": 6.1,
+   "institutional_pct": 0.8,
+   "out_of_state_owner_pct": 5.0,
+   "absentee_pct": 18.8,
+   "recent_sales": 1669,
+   "recent_company_pct": 12.8
+  },
+  "77433": {
+   "homes": 42724,
+   "new_build_company": 201,
+   "company_owned_pct": 3.2,
+   "institutional_pct": 0.6,
+   "out_of_state_owner_pct": 2.5,
+   "absentee_pct": 14.3,
+   "recent_sales": 7557,
+   "recent_company_pct": 5.8
+  },
+  "77016": {
+   "homes": 10431,
+   "new_build_company": 86,
+   "company_owned_pct": 5.0,
+   "institutional_pct": 0.2,
+   "out_of_state_owner_pct": 1.7,
+   "absentee_pct": 28.7,
+   "recent_sales": 1229,
+   "recent_company_pct": 16.0
+  },
+  "77502": {
+   "homes": 8190,
+   "new_build_company": 0,
+   "company_owned_pct": 4.1,
+   "institutional_pct": 0.1,
+   "out_of_state_owner_pct": 1.2,
+   "absentee_pct": 20.2,
+   "recent_sales": 828,
+   "recent_company_pct": 11.5
+  },
+  "77375": {
+   "homes": 20152,
+   "new_build_company": 34,
+   "company_owned_pct": 7.0,
+   "institutional_pct": 1.3,
+   "out_of_state_owner_pct": 3.6,
+   "absentee_pct": 21.0,
+   "recent_sales": 3336,
+   "recent_company_pct": 14.4
+  },
+  "77041": {
+   "homes": 9797,
+   "new_build_company": 0,
+   "company_owned_pct": 3.3,
+   "institutional_pct": 0.4,
+   "out_of_state_owner_pct": 1.5,
+   "absentee_pct": 18.6,
+   "recent_sales": 1194,
+   "recent_company_pct": 7.0
+  },
+  "77054": {
+   "homes": 890,
+   "new_build_company": 11,
+   "company_owned_pct": 5.7,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 4.8,
+   "absentee_pct": 57.3,
+   "recent_sales": 144,
+   "recent_company_pct": 14.6
+  },
+  "77063": {
+   "homes": 3583,
+   "new_build_company": 9,
+   "company_owned_pct": 4.2,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.3,
+   "absentee_pct": 22.4,
+   "recent_sales": 696,
+   "recent_company_pct": 9.9
+  },
+  "77493": {
+   "homes": 24540,
+   "new_build_company": 201,
+   "company_owned_pct": 4.8,
+   "institutional_pct": 0.4,
+   "out_of_state_owner_pct": 4.2,
+   "absentee_pct": 21.8,
+   "recent_sales": 3896,
+   "recent_company_pct": 11.8
+  },
+  "77396": {
+   "homes": 13924,
+   "new_build_company": 11,
+   "company_owned_pct": 6.6,
+   "institutional_pct": 2.0,
+   "out_of_state_owner_pct": 5.3,
+   "absentee_pct": 22.2,
+   "recent_sales": 1647,
+   "recent_company_pct": 11.6
+  },
+  "77586": {
+   "homes": 7045,
+   "new_build_company": 15,
+   "company_owned_pct": 3.3,
+   "institutional_pct": 0.4,
+   "out_of_state_owner_pct": 1.8,
+   "absentee_pct": 17.4,
+   "recent_sales": 1064,
+   "recent_company_pct": 7.7
+  },
+  "77081": {
+   "homes": 1007,
+   "new_build_company": 0,
+   "company_owned_pct": 4.5,
+   "institutional_pct": 0.1,
+   "out_of_state_owner_pct": 0.7,
+   "absentee_pct": 22.5,
+   "recent_sales": 130,
+   "recent_company_pct": 15.4
+  },
+  "77573": {
+   "homes": 1,
+   "new_build_company": 0,
+   "company_owned_pct": null,
+   "institutional_pct": null,
+   "out_of_state_owner_pct": null,
+   "absentee_pct": null,
+   "recent_sales": 0,
+   "recent_company_pct": null
+  },
+  "77073": {
+   "homes": 10809,
+   "new_build_company": 2,
+   "company_owned_pct": 7.5,
+   "institutional_pct": 3.8,
+   "out_of_state_owner_pct": 5.2,
+   "absentee_pct": 26.1,
+   "recent_sales": 1237,
+   "recent_company_pct": 15.0
+  },
+  "77048": {
+   "homes": 6826,
+   "new_build_company": 206,
+   "company_owned_pct": 9.4,
+   "institutional_pct": 0.6,
+   "out_of_state_owner_pct": 2.4,
+   "absentee_pct": 29.3,
+   "recent_sales": 1066,
+   "recent_company_pct": 33.0
+  },
+  "77064": {
+   "homes": 11615,
+   "new_build_company": 0,
+   "company_owned_pct": 4.0,
+   "institutional_pct": 1.0,
+   "out_of_state_owner_pct": 2.6,
+   "absentee_pct": 20.0,
+   "recent_sales": 1380,
+   "recent_company_pct": 10.3
+  },
+  "77086": {
+   "homes": 5727,
+   "new_build_company": 0,
+   "company_owned_pct": 4.9,
+   "institutional_pct": 0.8,
+   "out_of_state_owner_pct": 2.7,
+   "absentee_pct": 23.7,
+   "recent_sales": 580,
+   "recent_company_pct": 12.4
+  },
+  "77506": {
+   "homes": 6377,
+   "new_build_company": 2,
+   "company_owned_pct": 4.9,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.2,
+   "absentee_pct": 28.6,
+   "recent_sales": 695,
+   "recent_company_pct": 13.8
+  },
+  "77087": {
+   "homes": 7596,
+   "new_build_company": 5,
+   "company_owned_pct": 3.3,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 0.5,
+   "absentee_pct": 23.9,
+   "recent_sales": 677,
+   "recent_company_pct": 15.7
+  },
+  "77017": {
+   "homes": 6310,
+   "new_build_company": 0,
+   "company_owned_pct": 3.5,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 0.7,
+   "absentee_pct": 23.0,
+   "recent_sales": 628,
+   "recent_company_pct": 11.3
+  },
+  "77083": {
+   "homes": 9260,
+   "new_build_company": 1,
+   "company_owned_pct": 4.0,
+   "institutional_pct": 0.5,
+   "out_of_state_owner_pct": 2.9,
+   "absentee_pct": 21.5,
+   "recent_sales": 1093,
+   "recent_company_pct": 9.4
+  },
+  "77373": {
+   "homes": 23632,
+   "new_build_company": 29,
+   "company_owned_pct": 7.8,
+   "institutional_pct": 2.3,
+   "out_of_state_owner_pct": 6.1,
+   "absentee_pct": 24.0,
+   "recent_sales": 3732,
+   "recent_company_pct": 13.3
+  },
+  "77092": {
+   "homes": 6108,
+   "new_build_company": 19,
+   "company_owned_pct": 5.2,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.1,
+   "absentee_pct": 27.2,
+   "recent_sales": 896,
+   "recent_company_pct": 13.4
+  },
+  "77546": {
+   "homes": 7187,
+   "new_build_company": 0,
+   "company_owned_pct": 5.1,
+   "institutional_pct": 1.6,
+   "out_of_state_owner_pct": 2.8,
+   "absentee_pct": 20.0,
+   "recent_sales": 953,
+   "recent_company_pct": 7.5
+  },
+  "77015": {
+   "homes": 10500,
+   "new_build_company": 2,
+   "company_owned_pct": 3.6,
+   "institutional_pct": 0.3,
+   "out_of_state_owner_pct": 1.7,
+   "absentee_pct": 23.4,
+   "recent_sales": 1048,
+   "recent_company_pct": 13.3
+  },
+  "77033": {
+   "homes": 8840,
+   "new_build_company": 46,
+   "company_owned_pct": 8.8,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 2.0,
+   "absentee_pct": 34.9,
+   "recent_sales": 1123,
+   "recent_company_pct": 22.8
+  },
+  "77587": {
+   "homes": 3191,
+   "new_build_company": 1,
+   "company_owned_pct": 3.6,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 0.4,
+   "absentee_pct": 24.2,
+   "recent_sales": 268,
+   "recent_company_pct": 11.6
+  },
+  "77504": {
+   "homes": 3803,
+   "new_build_company": 1,
+   "company_owned_pct": 3.4,
+   "institutional_pct": 0.4,
+   "out_of_state_owner_pct": 1.1,
+   "absentee_pct": 18.5,
+   "recent_sales": 432,
+   "recent_company_pct": 6.7
+  },
+  "77505": {
+   "homes": 6645,
+   "new_build_company": 0,
+   "company_owned_pct": 1.5,
+   "institutional_pct": 0.1,
+   "out_of_state_owner_pct": 0.8,
+   "absentee_pct": 11.4,
+   "recent_sales": 786,
+   "recent_company_pct": 4.5
+  },
+  "77503": {
+   "homes": 5416,
+   "new_build_company": 0,
+   "company_owned_pct": 6.6,
+   "institutional_pct": 0.2,
+   "out_of_state_owner_pct": 1.5,
+   "absentee_pct": 24.6,
+   "recent_sales": 568,
+   "recent_company_pct": 14.4
+  },
+  "77336": {
+   "homes": 4805,
+   "new_build_company": 50,
+   "company_owned_pct": 4.1,
+   "institutional_pct": 0.2,
+   "out_of_state_owner_pct": 3.2,
+   "absentee_pct": 24.2,
+   "recent_sales": 670,
+   "recent_company_pct": 9.7
+  },
+  "77005": {
+   "homes": 7468,
+   "new_build_company": 19,
+   "company_owned_pct": 3.1,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 0.8,
+   "absentee_pct": 14.6,
+   "recent_sales": 1073,
+   "recent_company_pct": 8.9
+  },
+  "77598": {
+   "homes": 2898,
+   "new_build_company": 5,
+   "company_owned_pct": 3.5,
+   "institutional_pct": 1.1,
+   "out_of_state_owner_pct": 2.1,
+   "absentee_pct": 22.7,
+   "recent_sales": 454,
+   "recent_company_pct": 4.8
+  },
+  "77058": {
+   "homes": 2751,
+   "new_build_company": 5,
+   "company_owned_pct": 3.2,
+   "institutional_pct": 0.1,
+   "out_of_state_owner_pct": 1.6,
+   "absentee_pct": 19.4,
+   "recent_sales": 466,
+   "recent_company_pct": 8.6
+  },
+  "77547": {
+   "homes": 2462,
+   "new_build_company": 2,
+   "company_owned_pct": 4.6,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.3,
+   "absentee_pct": 28.0,
+   "recent_sales": 245,
+   "recent_company_pct": 16.3
+  },
+  "77049": {
+   "homes": 9429,
+   "new_build_company": 7,
+   "company_owned_pct": 4.0,
+   "institutional_pct": 1.0,
+   "out_of_state_owner_pct": 2.6,
+   "absentee_pct": 19.0,
+   "recent_sales": 917,
+   "recent_company_pct": 11.0
+  },
+  "77067": {
+   "homes": 5711,
+   "new_build_company": 2,
+   "company_owned_pct": 8.6,
+   "institutional_pct": 1.1,
+   "out_of_state_owner_pct": 3.1,
+   "absentee_pct": 28.3,
+   "recent_sales": 651,
+   "recent_company_pct": 14.6
+  },
+  "77066": {
+   "homes": 9534,
+   "new_build_company": 1,
+   "company_owned_pct": 4.5,
+   "institutional_pct": 1.1,
+   "out_of_state_owner_pct": 2.9,
+   "absentee_pct": 19.8,
+   "recent_sales": 1166,
+   "recent_company_pct": 12.2
+  },
+  "77025": {
+   "homes": 6555,
+   "new_build_company": 13,
+   "company_owned_pct": 3.8,
+   "institutional_pct": 0.1,
+   "out_of_state_owner_pct": 1.8,
+   "absentee_pct": 23.0,
+   "recent_sales": 952,
+   "recent_company_pct": 10.6
+  },
+  "77044": {
+   "homes": 15710,
+   "new_build_company": 10,
+   "company_owned_pct": 4.6,
+   "institutional_pct": 1.7,
+   "out_of_state_owner_pct": 3.2,
+   "absentee_pct": 20.8,
+   "recent_sales": 2056,
+   "recent_company_pct": 8.6
+  },
+  "77024": {
+   "homes": 9410,
+   "new_build_company": 23,
+   "company_owned_pct": 2.8,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 0.5,
+   "absentee_pct": 16.7,
+   "recent_sales": 1489,
+   "recent_company_pct": 7.5
+  },
+  "77043": {
+   "homes": 6738,
+   "new_build_company": 3,
+   "company_owned_pct": 4.6,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.1,
+   "absentee_pct": 27.2,
+   "recent_sales": 1047,
+   "recent_company_pct": 10.4
+  },
+  "77521": {
+   "homes": 16090,
+   "new_build_company": 52,
+   "company_owned_pct": 4.5,
+   "institutional_pct": 1.2,
+   "out_of_state_owner_pct": 3.2,
+   "absentee_pct": 19.3,
+   "recent_sales": 2333,
+   "recent_company_pct": 10.5
+  },
+  "77535": {
+   "homes": 8,
+   "new_build_company": 0,
+   "company_owned_pct": null,
+   "institutional_pct": null,
+   "out_of_state_owner_pct": null,
+   "absentee_pct": null,
+   "recent_sales": 1,
+   "recent_company_pct": null
+  },
+  "77377": {
+   "homes": 14543,
+   "new_build_company": 30,
+   "company_owned_pct": 2.8,
+   "institutional_pct": 0.6,
+   "out_of_state_owner_pct": 2.1,
+   "absentee_pct": 14.0,
+   "recent_sales": 2192,
+   "recent_company_pct": 6.3
+  },
+  "77484": {
+   "homes": 1455,
+   "new_build_company": 71,
+   "company_owned_pct": 2.4,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 2.1,
+   "absentee_pct": 23.8,
+   "recent_sales": 163,
+   "recent_company_pct": 9.2
+  },
+  "77013": {
+   "homes": 2577,
+   "new_build_company": 0,
+   "company_owned_pct": 3.3,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 0.9,
+   "absentee_pct": 23.3,
+   "recent_sales": 240,
+   "recent_company_pct": 14.6
+  },
+  "77079": {
+   "homes": 8322,
+   "new_build_company": 19,
+   "company_owned_pct": 2.0,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 0.8,
+   "absentee_pct": 17.4,
+   "recent_sales": 1374,
+   "recent_company_pct": 5.2
+  },
+  "77346": {
+   "homes": 25088,
+   "new_build_company": 112,
+   "company_owned_pct": 6.2,
+   "institutional_pct": 2.3,
+   "out_of_state_owner_pct": 4.4,
+   "absentee_pct": 17.5,
+   "recent_sales": 3744,
+   "recent_company_pct": 12.6
+  },
+  "77562": {
+   "homes": 2810,
+   "new_build_company": 1,
+   "company_owned_pct": 3.8,
+   "institutional_pct": 0.2,
+   "out_of_state_owner_pct": 1.7,
+   "absentee_pct": 26.5,
+   "recent_sales": 399,
+   "recent_company_pct": 10.5
+  },
+  "77027": {
+   "homes": 2573,
+   "new_build_company": 18,
+   "company_owned_pct": 3.6,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.2,
+   "absentee_pct": 26.6,
+   "recent_sales": 474,
+   "recent_company_pct": 9.7
+  },
+  "77523": {
+   "homes": 291,
+   "new_build_company": 1,
+   "company_owned_pct": 8.9,
+   "institutional_pct": 0.3,
+   "out_of_state_owner_pct": 2.4,
+   "absentee_pct": 24.7,
+   "recent_sales": 34,
+   "recent_company_pct": 14.7
+  },
+  "77389": {
+   "homes": 12300,
+   "new_build_company": 78,
+   "company_owned_pct": 5.5,
+   "institutional_pct": 0.5,
+   "out_of_state_owner_pct": 2.8,
+   "absentee_pct": 16.2,
+   "recent_sales": 2164,
+   "recent_company_pct": 11.3
+  },
+  "77379": {
+   "homes": 25377,
+   "new_build_company": 25,
+   "company_owned_pct": 4.2,
+   "institutional_pct": 1.0,
+   "out_of_state_owner_pct": 3.0,
+   "absentee_pct": 14.8,
+   "recent_sales": 3883,
+   "recent_company_pct": 8.7
+  },
+  "77055": {
+   "homes": 9773,
+   "new_build_company": 141,
+   "company_owned_pct": 5.2,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.0,
+   "absentee_pct": 22.4,
+   "recent_sales": 1670,
+   "recent_company_pct": 9.8
+  },
+  "77345": {
+   "homes": 8892,
+   "new_build_company": 0,
+   "company_owned_pct": 2.8,
+   "institutional_pct": 0.7,
+   "out_of_state_owner_pct": 1.8,
+   "absentee_pct": 10.3,
+   "recent_sales": 1480,
+   "recent_company_pct": 6.0
+  },
+  "77085": {
+   "homes": 4100,
+   "new_build_company": 2,
+   "company_owned_pct": 3.0,
+   "institutional_pct": 0.6,
+   "out_of_state_owner_pct": 1.8,
+   "absentee_pct": 18.8,
+   "recent_sales": 331,
+   "recent_company_pct": 11.2
+  },
+  "77031": {
+   "homes": 2904,
+   "new_build_company": 0,
+   "company_owned_pct": 3.9,
+   "institutional_pct": 0.2,
+   "out_of_state_owner_pct": 1.4,
+   "absentee_pct": 17.4,
+   "recent_sales": 319,
+   "recent_company_pct": 11.0
+  },
+  "77477": {
+   "homes": 679,
+   "new_build_company": 0,
+   "company_owned_pct": 6.5,
+   "institutional_pct": 1.3,
+   "out_of_state_owner_pct": 2.9,
+   "absentee_pct": 26.7,
+   "recent_sales": 77,
+   "recent_company_pct": 9.1
+  },
+  "77078": {
+   "homes": 4207,
+   "new_build_company": 25,
+   "company_owned_pct": 6.4,
+   "institutional_pct": 0.2,
+   "out_of_state_owner_pct": 2.1,
+   "absentee_pct": 28.0,
+   "recent_sales": 460,
+   "recent_company_pct": 21.1
+  },
+  "77074": {
+   "homes": 5343,
+   "new_build_company": 0,
+   "company_owned_pct": 7.1,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.2,
+   "absentee_pct": 29.7,
+   "recent_sales": 520,
+   "recent_company_pct": 14.8
+  },
+  "77071": {
+   "homes": 6069,
+   "new_build_company": 10,
+   "company_owned_pct": 4.9,
+   "institutional_pct": 0.4,
+   "out_of_state_owner_pct": 2.3,
+   "absentee_pct": 19.7,
+   "recent_sales": 675,
+   "recent_company_pct": 15.3
+  },
+  "77357": {
+   "homes": 318,
+   "new_build_company": 4,
+   "company_owned_pct": 1.9,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 2.8,
+   "absentee_pct": 17.9,
+   "recent_sales": 50,
+   "recent_company_pct": 10.0
+  },
+  "77388": {
+   "homes": 15098,
+   "new_build_company": 50,
+   "company_owned_pct": 5.8,
+   "institutional_pct": 1.5,
+   "out_of_state_owner_pct": 4.0,
+   "absentee_pct": 20.0,
+   "recent_sales": 2278,
+   "recent_company_pct": 10.4
+  },
+  "77070": {
+   "homes": 11952,
+   "new_build_company": 1,
+   "company_owned_pct": 4.6,
+   "institutional_pct": 1.2,
+   "out_of_state_owner_pct": 2.7,
+   "absentee_pct": 18.8,
+   "recent_sales": 1659,
+   "recent_company_pct": 9.8
+  },
+  "77080": {
+   "homes": 9420,
+   "new_build_company": 105,
+   "company_owned_pct": 5.2,
+   "institutional_pct": 0.2,
+   "out_of_state_owner_pct": 1.7,
+   "absentee_pct": 23.1,
+   "recent_sales": 1497,
+   "recent_company_pct": 12.7
+  },
+  "77068": {
+   "homes": 3669,
+   "new_build_company": 1,
+   "company_owned_pct": 3.6,
+   "institutional_pct": 0.9,
+   "out_of_state_owner_pct": 2.8,
+   "absentee_pct": 13.9,
+   "recent_sales": 563,
+   "recent_company_pct": 9.2
+  },
+  "77069": {
+   "homes": 5152,
+   "new_build_company": 1,
+   "company_owned_pct": 3.9,
+   "institutional_pct": 0.5,
+   "out_of_state_owner_pct": 2.3,
+   "absentee_pct": 16.7,
+   "recent_sales": 905,
+   "recent_company_pct": 7.4
+  },
+  "77090": {
+   "homes": 5239,
+   "new_build_company": 63,
+   "company_owned_pct": 6.1,
+   "institutional_pct": 1.8,
+   "out_of_state_owner_pct": 4.5,
+   "absentee_pct": 22.7,
+   "recent_sales": 709,
+   "recent_company_pct": 12.1
+  },
+  "77530": {
+   "homes": 6999,
+   "new_build_company": 1,
+   "company_owned_pct": 6.6,
+   "institutional_pct": 0.7,
+   "out_of_state_owner_pct": 4.8,
+   "absentee_pct": 24.9,
+   "recent_sales": 713,
+   "recent_company_pct": 13.5
+  },
+  "77449": {
+   "homes": 37966,
+   "new_build_company": 13,
+   "company_owned_pct": 6.8,
+   "institutional_pct": 2.2,
+   "out_of_state_owner_pct": 4.9,
+   "absentee_pct": 26.8,
+   "recent_sales": 4744,
+   "recent_company_pct": 14.2
+  },
+  "77365": {
+   "homes": 974,
+   "new_build_company": 0,
+   "company_owned_pct": 3.9,
+   "institutional_pct": 0.7,
+   "out_of_state_owner_pct": 2.5,
+   "absentee_pct": 16.1,
+   "recent_sales": 174,
+   "recent_company_pct": 7.5
+  },
+  "77084": {
+   "homes": 27285,
+   "new_build_company": 12,
+   "company_owned_pct": 5.2,
+   "institutional_pct": 1.2,
+   "out_of_state_owner_pct": 3.3,
+   "absentee_pct": 22.0,
+   "recent_sales": 3334,
+   "recent_company_pct": 11.6
+  },
+  "77339": {
+   "homes": 10507,
+   "new_build_company": 0,
+   "company_owned_pct": 5.2,
+   "institutional_pct": 1.2,
+   "out_of_state_owner_pct": 2.9,
+   "absentee_pct": 17.4,
+   "recent_sales": 1679,
+   "recent_company_pct": 9.6
+  },
+  "77030": {
+   "homes": 1756,
+   "new_build_company": 9,
+   "company_owned_pct": 3.6,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 2.2,
+   "absentee_pct": 23.9,
+   "recent_sales": 255,
+   "recent_company_pct": 9.0
+  },
+  "77099": {
+   "homes": 7694,
+   "new_build_company": 0,
+   "company_owned_pct": 5.2,
+   "institutional_pct": 0.2,
+   "out_of_state_owner_pct": 3.3,
+   "absentee_pct": 28.9,
+   "recent_sales": 777,
+   "recent_company_pct": 10.4
+  },
+  "77051": {
+   "homes": 5612,
+   "new_build_company": 183,
+   "company_owned_pct": 9.6,
+   "institutional_pct": 0.2,
+   "out_of_state_owner_pct": 4.7,
+   "absentee_pct": 35.3,
+   "recent_sales": 770,
+   "recent_company_pct": 27.9
+  },
+  "77056": {
+   "homes": 3418,
+   "new_build_company": 14,
+   "company_owned_pct": 3.9,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.1,
+   "absentee_pct": 21.9,
+   "recent_sales": 546,
+   "recent_company_pct": 8.6
+  },
+  "77057": {
+   "homes": 4556,
+   "new_build_company": 80,
+   "company_owned_pct": 4.9,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.9,
+   "absentee_pct": 42.0,
+   "recent_sales": 804,
+   "recent_company_pct": 11.3
+  },
+  "77095": {
+   "homes": 19994,
+   "new_build_company": 0,
+   "company_owned_pct": 3.8,
+   "institutional_pct": 1.2,
+   "out_of_state_owner_pct": 3.1,
+   "absentee_pct": 16.8,
+   "recent_sales": 2592,
+   "recent_company_pct": 8.1
+  },
+  "77089": {
+   "homes": 15308,
+   "new_build_company": 1,
+   "company_owned_pct": 3.4,
+   "institutional_pct": 0.4,
+   "out_of_state_owner_pct": 1.4,
+   "absentee_pct": 17.5,
+   "recent_sales": 1811,
+   "recent_company_pct": 9.3
+  },
+  "77014": {
+   "homes": 6429,
+   "new_build_company": 3,
+   "company_owned_pct": 5.6,
+   "institutional_pct": 1.5,
+   "out_of_state_owner_pct": 3.9,
+   "absentee_pct": 23.9,
+   "recent_sales": 679,
+   "recent_company_pct": 12.2
+  },
+  "77065": {
+   "homes": 7852,
+   "new_build_company": 0,
+   "company_owned_pct": 4.9,
+   "institutional_pct": 1.0,
+   "out_of_state_owner_pct": 2.7,
+   "absentee_pct": 18.8,
+   "recent_sales": 1026,
+   "recent_company_pct": 11.3
+  },
+  "77035": {
+   "homes": 7044,
+   "new_build_company": 2,
+   "company_owned_pct": 7.2,
+   "institutional_pct": 0.2,
+   "out_of_state_owner_pct": 1.9,
+   "absentee_pct": 26.4,
+   "recent_sales": 888,
+   "recent_company_pct": 14.4
+  },
+  "77494": {
+   "homes": 1376,
+   "new_build_company": 1,
+   "company_owned_pct": 5.3,
+   "institutional_pct": 1.2,
+   "out_of_state_owner_pct": 4.1,
+   "absentee_pct": 28.0,
+   "recent_sales": 184,
+   "recent_company_pct": 10.9
+  },
+  "77082": {
+   "homes": 10216,
+   "new_build_company": 12,
+   "company_owned_pct": 5.4,
+   "institutional_pct": 0.5,
+   "out_of_state_owner_pct": 3.1,
+   "absentee_pct": 27.4,
+   "recent_sales": 1531,
+   "recent_company_pct": 11.2
+  },
+  "77061": {
+   "homes": 3615,
+   "new_build_company": 1,
+   "company_owned_pct": 2.9,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 0.8,
+   "absentee_pct": 21.4,
+   "recent_sales": 356,
+   "recent_company_pct": 12.4
+  },
+  "77042": {
+   "homes": 4184,
+   "new_build_company": 0,
+   "company_owned_pct": 3.4,
+   "institutional_pct": 0.1,
+   "out_of_state_owner_pct": 1.4,
+   "absentee_pct": 25.2,
+   "recent_sales": 715,
+   "recent_company_pct": 8.3
+  },
+  "77096": {
+   "homes": 7960,
+   "new_build_company": 12,
+   "company_owned_pct": 4.1,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.2,
+   "absentee_pct": 19.0,
+   "recent_sales": 1170,
+   "recent_company_pct": 12.9
+  },
+  "77036": {
+   "homes": 5086,
+   "new_build_company": 0,
+   "company_owned_pct": 4.8,
+   "institutional_pct": 0.0,
+   "out_of_state_owner_pct": 1.7,
+   "absentee_pct": 31.5,
+   "recent_sales": 624,
+   "recent_company_pct": 11.4
+  },
+  "77062": {
+   "homes": 8158,
+   "new_build_company": 0,
+   "company_owned_pct": 3.0,
+   "institutional_pct": 0.3,
+   "out_of_state_owner_pct": 1.4,
+   "absentee_pct": 15.1,
+   "recent_sales": 1179,
+   "recent_company_pct": 7.3
+  },
+  "77581": {
+   "homes": 1712,
+   "new_build_company": 0,
+   "company_owned_pct": 1.2,
+   "institutional_pct": 0.1,
+   "out_of_state_owner_pct": 1.1,
+   "absentee_pct": 9.0,
+   "recent_sales": 260,
+   "recent_company_pct": 4.2
+  },
+  "77450": {
+   "homes": 13831,
+   "new_build_company": 0,
+   "company_owned_pct": 4.7,
+   "institutional_pct": 0.5,
+   "out_of_state_owner_pct": 2.5,
+   "absentee_pct": 19.7,
+   "recent_sales": 1883,
+   "recent_company_pct": 10.3
+  },
+  "77059": {
+   "homes": 6510,
+   "new_build_company": 0,
+   "company_owned_pct": 1.8,
+   "institutional_pct": 0.2,
+   "out_of_state_owner_pct": 0.9,
+   "absentee_pct": 9.3,
+   "recent_sales": 915,
+   "recent_company_pct": 4.8
+  },
+  "77489": {
+   "homes": 403,
+   "new_build_company": 0,
+   "company_owned_pct": 3.5,
+   "institutional_pct": 0.5,
+   "out_of_state_owner_pct": 1.2,
+   "absentee_pct": 11.7,
+   "recent_sales": 39,
+   "recent_company_pct": 10.3
+  },
+  "77501": {
+   "homes": 1,
+   "new_build_company": 0,
+   "company_owned_pct": null,
+   "institutional_pct": null,
+   "out_of_state_owner_pct": null,
+   "absentee_pct": null,
+   "recent_sales": 0,
+   "recent_company_pct": null
+  },
+  "77498": {
+   "homes": 1,
+   "new_build_company": 0,
+   "company_owned_pct": null,
+   "institutional_pct": null,
+   "out_of_state_owner_pct": null,
+   "absentee_pct": null,
+   "recent_sales": 1,
+   "recent_company_pct": null
+  },
+  "77443": {
+   "homes": 4,
+   "new_build_company": 0,
+   "company_owned_pct": null,
+   "institutional_pct": null,
+   "out_of_state_owner_pct": null,
+   "absentee_pct": null,
+   "recent_sales": 1,
+   "recent_company_pct": null
+  },
+  "77251": {
+   "homes": 68,
+   "new_build_company": 0,
+   "company_owned_pct": 2.9,
+   "institutional_pct": 1.5,
+   "out_of_state_owner_pct": 2.9,
+   "absentee_pct": 4.4,
+   "recent_sales": 8,
+   "recent_company_pct": null
+  },
+  "77597": {
+   "homes": 1,
+   "new_build_company": 0,
+   "company_owned_pct": null,
+   "institutional_pct": null,
+   "out_of_state_owner_pct": null,
+   "absentee_pct": null,
+   "recent_sales": 0,
+   "recent_company_pct": null
+  }
+ }
+}
