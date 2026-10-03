@@ -57,7 +57,7 @@ LENDERS = [
 
 PUBLIC = [
     r'\bCITY OF\b', r'\bCOUNTY\b', r'\bSTATE OF\b', r'HOUSING AUTHORITY', r'\bISD\b', r'INDEPENDENT SCHOOL',
-    r'LAND BANK', r'HOUSING (FINANCE )?CORP', r'REDEVELOPMENT AUTHORITY', r'\bTIRZ\b', r'\bMUD\b',
+    r'LAND BANK', r'HOUSING (FINANCE |OPPORTUNITY |DEVELOPMENT )?CORP', r'REDEVELOPMENT AUTHORITY', r'\bTIRZ\b', r'\bMUD\b',
     r'MUNICIPAL UTILITY', r'CHURCH', r'MINISTR', r'HABITAT FOR HUMANITY', r'COMMUNITY LAND TRUST',
     r'\bCDC\b', r'COMMUNITY DEVELOPMENT', r'UNITED STATES', r'\bTXDOT\b', r'DEPARTMENT OF TRANSPORTATION',
     r'UNIVERSITY', r'COLLEGE', r'FLOOD CONTROL',
@@ -155,7 +155,8 @@ if __name__ == '__main__':
         'D R HORTON - TEXAS LTD': 'builder', 'LENNAR HOMES OF TEXAS SALES & MARKETING LTD': 'builder',
         'FEDERAL NATIONAL MORTGAGE ASSOCIATION': 'lender', 'CITY OF HOUSTON': 'public',
         'HOUSTON LAND BANK': 'public', 'JONES FAMILY TRUST': 'trust', 'ESTATE OF LEE ROBERT': 'trust',
-        'HOUSTON HOUSING AUTHORITY': 'public',
+        'HOUSTON HOUSING AUTHORITY': 'public', 'BROWNSVILLE HOUSING OPPORTUNITY CORPORATION': 'public',
+        'SPACE EXPLORATION TECHNOLOGIES CORP': 'company',
     }
     bad = {k: (classify(k), v) for k, v in tests.items() if classify(k) != v}
     # every institutional name should map to an operator, and vice versa
