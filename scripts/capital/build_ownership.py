@@ -9,9 +9,11 @@ Sources
 
 Usage
   python build_ownership.py --source hcad    --input data/raw/Real_acct_owner.zip --out data/capital/ownership_zip.json
-  python build_ownership.py --source cameron --input data/raw/parcels_public.zip  --out data/capital/ownership_zip_cameron.json [--inspect]
+  python build_ownership.py --source cameron --input data/raw/parcels_public.zip  --out OUT.json \
+         --areas data/census/tracts.geojson --area-id tract_id [--inspect]
 
-Measures per ZIP, over single-family homes (Texas state property class A1):
+Measures per ZIP (or per polygon with --areas), over single-family homes (Texas state property class A1 in
+Harris; class A with a building in Cameron, which does not split out mobile homes on owned land):
   homes                    single-family parcels
   company_owned_pct        % owned by a company or a large rental operator (see owner_classes.py),
                            not counting company-held homes built in the last two years (developer inventory)
@@ -20,12 +22,14 @@ Measures per ZIP, over single-family homes (Texas state property class A1):
   new_build_company        company-held homes built in the last two years (excluded above)
   out_of_state_owner_pct   % whose owner's mailing address is outside Texas
   absentee_pct             % whose owner's mailing address is not the property itself
+  no_homestead_pct         % without a homestead exemption, i.e. not claimed as the owner's home
+                           (Cameron only; the HCAD file used here has no exemption codes)
   recent_sales             homes with an ownership change in the last 36 months (from the appraisal record's
                            new-owner date, when the source has one)
   recent_company_pct       % of those recent changes where the new owner is a company or rental operator
                            (existing homes only: homes built in the last two years are left out of both)
 
-Shares are withheld for ZIPs with fewer than 50 homes (or 20 recent sales).
+Shares are withheld for areas with fewer than 50 homes (or 20 recent sales).
 """
 
 import argparse
@@ -52,6 +56,19 @@ def norm_addr(s):
     return ' '.join(s.split())
 
 
+_DIRS = {'N', 'S', 'E', 'W', 'NE', 'NW', 'SE', 'SW', 'NORTH', 'SOUTH', 'EAST', 'WEST'}
+
+
+def same_place(mail, site):
+    """True when a mailing address is the property itself: same house number and street name,
+    ignoring directionals, street types and unit numbers (sources format these differently)."""
+    a = [t for t in norm_addr(mail).split() if t not in _DIRS]
+    b = [t for t in norm_addr(site).split() if t not in _DIRS]
+    if not a or not b or not a[0].isdigit() or a[0] != b[0]:
+        return False
+    return bool(set(a[1:3]) & set(b[1:3]))
+
+
 def parse_date(s):
     s = (s or '').strip()
     for fmt, n in (('%m/%d/%Y', 10), ('%Y-%m-%d', 10), ('%Y%m%d', 8)):
@@ -70,7 +87,7 @@ def open_member(zf, suffix):
 
 
 def rows_hcad(path):
-    """Yield dicts: zip, cls, owner, mail_state, mail_addr, site_addr, new_owner_date."""
+    """Yield dicts: zip, home (single-family class A1), owner, mail_state, mail_addr, site_addr, new_owner_date, yr_built."""
     zf = zipfile.ZipFile(path)
     owners = {}
     with open_member(zf, 'owners.txt') as f:
@@ -84,9 +101,10 @@ def rows_hcad(path):
         for row in r:
             acct = (row.get('acct') or '').strip()
             m = re.search(r'\b(7\d{4})\b', (row.get('site_addr_3') or '') + ' ' + (row.get('site_addr_2') or ''))
+            cls = (row.get('state_class') or '').strip().upper()
             yield {
                 'zip': m.group(1) if m else None,
-                'cls': (row.get('state_class') or '').strip().upper(),
+                'home': cls.startswith('A1'),
                 'owner': owners.get(acct) or row.get('mailto'),
                 'mail_state': (row.get('mail_state') or '').strip().upper(),
                 'mail_addr': row.get('mail_addr_1'),
@@ -96,46 +114,55 @@ def rows_hcad(path):
             }
 
 
-# Candidate field names for the Cameron CAD parcel export; the first one present is used.
-CAMERON_FIELDS = {
-    'zip': ['situs_zip', 'SITUS_ZIP', 'situszip', 'prop_zip', 'ZIP', 'zip'],
-    'cls': ['state_cd', 'STATE_CD', 'imprv_stat', 'state_code', 'ptd_code', 'STATECODE'],
-    'owner': ['file_as_na', 'FILE_AS_NA', 'owner_name', 'OWNER_NAME', 'py_owner_n', 'OWNER', 'owner'],
-    'mail_state': ['addr_state', 'ADDR_STATE', 'mail_state', 'MAIL_STATE', 'state', 'STATE'],
-    'mail_addr': ['addr_line1', 'ADDR_LINE1', 'addr_line2', 'mail_addr1', 'MAIL_ADDR1', 'address1'],
-    'site_addr': ['situs_disp', 'SITUS_DISP', 'situs', 'SITUS', 'situs_addr', 'SITUS_ADDR'],
-    'new_owner_date': ['deed_dt', 'DEED_DT', 'deed_date', 'DEED_DATE', 'sale_date', 'SALE_DATE'],
-}
+# Cameron Appraisal District GIS export (parcels_public.zip, checked Sept. 2026):
+#   stateCd 'A' = single-family residential (Cameron does not split A1/A2), owner, addr1/addrState (mailing),
+#   situsNo/sitPfx/sitStr/sitSfx (site), sitZip (blank for ~2/3 of homes), exms (exemption codes; 'HS' =
+#   homestead), deedDt (latest deed, YYYY-MM-DD; 1900-01-01 = unknown), yrBuilt, lvgArea.
+# Geometry is in NAD83 Texas South State Plane (ft); parcels are placed by the centre of their bounding box.
 
 
 def rows_cameron(path, inspect=False):
     import shapefile  # pip install pyshp
+    from pyproj import Transformer  # pip install pyproj
     zf = zipfile.ZipFile(path)
     base = next(n[:-4] for n in zf.namelist() if n.lower().endswith('.dbf'))
-    r = shapefile.Reader(dbf=io.BytesIO(zf.read(base + '.dbf')), encoding='latin-1')
+    r = shapefile.Reader(shp=io.BytesIO(zf.read(base + '.shp')), shx=io.BytesIO(zf.read(base + '.shx')),
+                         dbf=io.BytesIO(zf.read(base + '.dbf')), encoding='latin-1')
     names = [f[0] for f in r.fields[1:]]
-    pick = {k: next((c for c in cands if c in names), None) for k, cands in CAMERON_FIELDS.items()}
-    if inspect or not (pick['owner'] and pick['cls'] and pick['zip']):
+    if inspect:
         print('Fields in export:', names)
-        print('Mapped:', pick)
         for i, rec in enumerate(r.iterRecords()):
             if i >= 3:
                 break
             print(dict(zip(names, rec)))
-        if not (pick['owner'] and pick['cls'] and pick['zip']):
-            raise SystemExit('Update CAMERON_FIELDS with the right field names above.')
-    for rec in r.iterRecords():
-        d = dict(zip(names, rec))
-        z = str(d.get(pick['zip']) or '').strip()[:5]
+    to_wgs = Transformer.from_crs(zf.read(base + '.prj').decode('latin-1'), 'EPSG:4326', always_xy=True)
+    for i, rec in enumerate(r.iterRecords()):
+        d = rec.as_dict()
+        if str(d.get('stateCd') or '').strip().upper() != 'A' or not (d.get('lvgArea') or 0) > 0:
+            continue                                   # single-family homes with a building only
+        lon = lat = None
+        try:
+            shp = r.shape(i)                           # a few parcels in the export have empty geometry
+        except shapefile.ShapefileException:
+            shp = None
+        if shp is not None and getattr(shp, 'bbox', None) is not None and len(shp.points):
+            x0, y0, x1, y1 = shp.bbox
+            lon, lat = to_wgs.transform((x0 + x1) / 2, (y0 + y1) / 2)
+        z = str(d.get('sitZip') or '').strip()[:5]
+        deed = parse_date(str(d.get('deedDt') or ''))
+        site = ' '.join(str(d.get(k) or '').strip() for k in ('situsNo', 'sitPfx', 'sitStr', 'sitSfx'))
+        exms = {e.strip() for e in str(d.get('exms') or '').upper().split(',')}
         yield {
             'zip': z if z.isdigit() else None,
-            'cls': str(d.get(pick['cls']) or '').strip().upper(),
-            'owner': d.get(pick['owner']),
-            'mail_state': str(d.get(pick['mail_state']) or '').strip().upper() if pick['mail_state'] else '',
-            'mail_addr': d.get(pick['mail_addr']) if pick['mail_addr'] else None,
-            'site_addr': d.get(pick['site_addr']) if pick['site_addr'] else None,
-            'new_owner_date': parse_date(str(d.get(pick['new_owner_date']))) if pick['new_owner_date'] else None,
-            'yr_built': None,
+            'home': True,
+            'lon': lon, 'lat': lat,
+            'owner': d.get('owner'),
+            'mail_state': str(d.get('addrState') or '').strip().upper(),
+            'mail_addr': d.get('addr1'),
+            'site_addr': site,
+            'new_owner_date': deed if deed and deed.year > 1900 else None,
+            'yr_built': d.get('yrBuilt') or None,
+            'homestead': 'HS' in exms,
         }
 
 
@@ -146,6 +173,9 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--asof', default=date.today().isoformat(), help='reference date for "recent" (YYYY-MM-DD)')
     ap.add_argument('--label', help='how the map names this data, e.g. "HCAD 2026 certified roll"')
+    ap.add_argument('--areas', help='GeoJSON of polygons to total by (e.g. census tracts); homes are placed by '
+                                    'their coordinates, so the source must have them (Cameron does, HCAD does not)')
+    ap.add_argument('--area-id', default='tract_id', help='property of --areas that identifies each polygon')
     ap.add_argument('--inspect', action='store_true')
     ap.add_argument('--report', help='also write a CSV of the largest company owners and shared mailing addresses (for checking the rules)')
     args = ap.parse_args()
@@ -153,6 +183,25 @@ def main():
     cutoff = date(asof.year - 3, asof.month, min(asof.day, 28))
 
     rows = rows_hcad(args.input) if args.source == 'hcad' else rows_cameron(args.input, args.inspect)
+    locate = None
+    if args.areas:
+        from shapely.geometry import shape, Point
+        from shapely.strtree import STRtree
+        with open(args.areas, encoding='utf-8') as f:
+            feats = json.load(f)['features']
+        polys = [shape(ft['geometry']) for ft in feats]
+        ids = [str(ft['properties'][args.area_id]) for ft in feats]
+        tree = STRtree(polys)
+
+        def locate(row):
+            if row.get('lon') is None:
+                return None
+            pt = Point(row['lon'], row['lat'])
+            for i in tree.query(pt):
+                if polys[i].contains(pt):
+                    return ids[i]
+            return None
+    unplaced = 0
     z = defaultdict(Counter)
     types_all = Counter()
     ops = Counter()          # homes by operator: matched by owner name
@@ -160,9 +209,14 @@ def main():
     managed = Counter()      # company-owned homes billed to a manager's address, owner not identified
     top_names, top_mail = Counter(), Counter()
     has_dates = False
+    has_homestead = False
     new_build_company_all = 0
     for row in rows:
-        if not row['zip'] or not row['cls'].startswith('A1'):
+        if not row['home']:
+            continue
+        key = locate(row) if locate else row['zip']
+        if not key:
+            unplaced += 1
             continue
         t = classify(row['owner'])
         op = operator(row['owner'])
@@ -179,8 +233,11 @@ def main():
         if t in INVESTOR_TYPES or t == 'unknown':
             top_names[(normalize(row['owner']), t, op or '')] += 1
             top_mail[(norm_addr(row['mail_addr']), row['mail_state'])] += 1
-        c = z[row['zip']]
+        c = z[key]
         c['homes'] += 1
+        if row.get('homestead') is not None:
+            has_homestead = True
+            c['homestead'] += row['homestead']
         c['t_' + t] += 1
         # Homes built in the last two years and held by a company are mostly small developers' unsold
         # inventory (townhome LLCs), not landlords: count them separately.
@@ -192,7 +249,7 @@ def main():
             c['investor'] += 1
         if row['mail_state'] and row['mail_state'] not in ('TX', 'TEXAS'):
             c['out_of_state'] += 1
-        if row['mail_addr'] and row['site_addr'] and norm_addr(row['mail_addr']) != norm_addr(row['site_addr']):
+        if row['mail_addr'] and row['site_addr'] and not same_place(row['mail_addr'], row['site_addr']):
             c['absentee'] += 1
         if row['new_owner_date'] and not new_build:
             has_dates = True
@@ -213,6 +270,7 @@ def main():
             'institutional_pct': share(c['t_institutional'], c['homes'], MIN_HOMES),
             'out_of_state_owner_pct': share(c['out_of_state'], c['homes'], MIN_HOMES),
             'absentee_pct': share(c['absentee'], c['homes'], MIN_HOMES),
+            'no_homestead_pct': share(c['homes'] - c['homestead'], c['homes'], MIN_HOMES) if has_homestead else None,
             'recent_sales': c['recent'] if has_dates else None,
             'recent_company_pct': share(c['recent_investor'], c['recent'], MIN_SALES) if has_dates else None,
         }
@@ -222,10 +280,11 @@ def main():
             'operator_counts_total': dict((ops + ops_addr).most_common()),
             'managed_for_unidentified_owners': dict(managed),
             'new_build_company_excluded': new_build_company_all, 'new_build_since': asof.year - 2,
-            'min_homes': MIN_HOMES, 'min_recent_sales': MIN_SALES}
+            'min_homes': MIN_HOMES, 'min_recent_sales': MIN_SALES,
+            'by': f'{args.areas}:{args.area_id}' if args.areas else 'site ZIP', 'homes_not_placed': unplaced}
     with open(args.out, 'w', encoding='utf-8') as f:
-        json.dump({'metadata': meta, 'zips': out}, f, indent=1)
-    print(f"{len(out)} ZIPs, {sum(types_all.values())} single-family homes; owner types: {dict(types_all)}")
+        json.dump({'metadata': meta, ('areas' if args.areas else 'zips'): out}, f, indent=1)
+    print(f"{len(out)} areas, {sum(types_all.values())} single-family homes ({unplaced} not placed); owner types: {dict(types_all)}")
     print('Large operators (by name):', dict(ops.most_common()))
     print('Added by office address:', dict(ops_addr.most_common()))
     print('Total:', dict((ops + ops_addr).most_common()))
